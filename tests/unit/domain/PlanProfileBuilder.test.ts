@@ -32,8 +32,8 @@ function intervalSegment(overrides: Partial<Segment> = {}): Segment {
     restDistanceKm: 0,
     restPaceSecPerKm: null,
     steps: [
-      { id: stepId('st1'), mode: 'distance-pace', timeSec: 120, distanceKm: 0.4, paceSecPerKm: 300 },
-      { id: stepId('st2'), mode: 'distance-pace', timeSec: 126, distanceKm: 0.4, paceSecPerKm: 315 },
+      { id: stepId('st1'), kind: 'work', mode: 'distance-pace', timeSec: 120, distanceKm: 0.4, paceSecPerKm: 300 },
+      { id: stepId('st2'), kind: 'work', mode: 'distance-pace', timeSec: 126, distanceKm: 0.4, paceSecPerKm: 315 },
     ],
     ...overrides,
   });
@@ -60,6 +60,22 @@ describe('expandInstances', () => {
   test('rest between reps is skipped entirely when reps is 1', () => {
     const instances = expandInstances([intervalSegment({ reps: 1 })]);
     expect(instances.some((i) => i.isRest)).toBe(false);
+  });
+
+  test('a rest-kind step in the ladder produces its own rest instance, with its own time', () => {
+    const instances = expandInstances([
+      intervalSegment({
+        reps: 1,
+        restEnabled: false,
+        steps: [
+          { id: stepId('st1'), kind: 'work', mode: 'distance-pace', timeSec: 120, distanceKm: 0.4, paceSecPerKm: 300 },
+          { id: stepId('st2'), kind: 'rest', mode: 'time-pace', timeSec: 90, distanceKm: 0.2, paceSecPerKm: 450 },
+        ],
+      }),
+    ]);
+    expect(instances.map((i) => i.isRest ?? false)).toEqual([false, true]);
+    expect(instances[1]!.type).toBe('rest');
+    expect(instances[1]!.timeSec).toBe(90);
   });
 });
 

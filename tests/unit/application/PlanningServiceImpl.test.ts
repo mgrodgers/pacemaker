@@ -174,6 +174,32 @@ describe('interval steps', () => {
     const segId = service.addSegment(id, 'interval');
     expect(() => service.setStepField(id, segId, stepId('nope'), 'distance', '1')).toThrow(StepNotFoundError);
   });
+
+  test('addIntervalStep defaults to kind "work"', () => {
+    const id = service.createPlan();
+    const segId = service.addSegment(id, 'interval');
+    service.addIntervalStep(id, segId);
+    expect(service.getPlan(id).segments[0]!.steps.at(-1)!.kind).toBe('work');
+  });
+
+  test('addIntervalStep with kind "rest" appends a rest step, never automatically', () => {
+    const id = service.createPlan();
+    const segId = service.addSegment(id, 'interval');
+    expect(service.getPlan(id).segments[0]!.steps.every((s) => s.kind === 'work')).toBe(true);
+
+    service.addIntervalStep(id, segId, 'rest');
+    const steps = service.getPlan(id).segments[0]!.steps;
+    expect(steps.at(-1)!.kind).toBe('rest');
+    expect(steps.slice(0, -1).every((s) => s.kind === 'work')).toBe(true);
+  });
+
+  test('setStepKind changes an existing step’s kind', () => {
+    const id = service.createPlan();
+    const segId = service.addSegment(id, 'interval');
+    const stepIdToChange = service.getPlan(id).segments[0]!.steps[0]!.id;
+    service.setStepKind(id, segId, stepIdToChange, 'rest');
+    expect(service.getPlan(id).segments[0]!.steps[0]!.kind).toBe('rest');
+  });
 });
 
 describe('totals and best efforts', () => {

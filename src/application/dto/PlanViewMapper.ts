@@ -57,6 +57,7 @@ function summarizeSegment(segment: Segment, units: Units): string {
 function toStepDetail(step: Step, units: Units): StepDetail {
   return {
     id: step.id,
+    kind: step.kind,
     mode: step.mode,
     time: timeField(step.mode, step.timeSec),
     distance: distanceField(step.mode, step.distanceKm, units),

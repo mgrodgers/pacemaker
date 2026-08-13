@@ -3,6 +3,7 @@ import type { Segment } from '../entities/Segment';
 import type { Step } from '../entities/Step';
 import type { SegmentId, StepId } from '../valueObjects/Ids';
 import type { SegmentType } from '../valueObjects/SegmentType';
+import type { StepKind } from '../valueObjects/StepKind';
 
 export interface DerivedFields {
   readonly timeSec: number;
@@ -32,18 +33,34 @@ export function computeDerived(
 }
 
 export interface StepOverrides {
+  readonly kind?: StepKind;
   readonly mode?: FieldMode;
   readonly timeSec?: number;
   readonly distanceKm?: number;
   readonly paceSecPerKm?: number | null;
 }
 
+interface StepKindDefaults {
+  readonly mode: FieldMode;
+  readonly timeSec: number;
+  readonly distanceKm: number;
+  readonly paceSecPerKm: number | null;
+}
+
+const STEP_KIND_DEFAULTS: Readonly<Record<StepKind, StepKindDefaults>> = {
+  work: { mode: 'distance-pace', timeSec: 0, distanceKm: 0.4, paceSecPerKm: 300 },
+  // Recovery jog, not a paceless stop — time+pace so distance derives.
+  rest: { mode: 'time-pace', timeSec: 90, distanceKm: 0, paceSecPerKm: 420 },
+};
+
 export function makeStep(id: StepId, overrides: StepOverrides = {}): Step {
-  const mode = overrides.mode ?? 'distance-pace';
-  const timeSec = overrides.timeSec ?? 0;
-  const distanceKm = overrides.distanceKm ?? 0.4;
-  const paceSecPerKm = overrides.paceSecPerKm ?? 300;
-  return { id, mode, ...computeDerived(mode, timeSec, distanceKm, paceSecPerKm) };
+  const kind = overrides.kind ?? 'work';
+  const defaults = STEP_KIND_DEFAULTS[kind];
+  const mode = overrides.mode ?? defaults.mode;
+  const timeSec = overrides.timeSec ?? defaults.timeSec;
+  const distanceKm = overrides.distanceKm ?? defaults.distanceKm;
+  const paceSecPerKm = overrides.paceSecPerKm ?? defaults.paceSecPerKm;
+  return { id, kind, mode, ...computeDerived(mode, timeSec, distanceKm, paceSecPerKm) };
 }
 
 interface SegmentPreset {

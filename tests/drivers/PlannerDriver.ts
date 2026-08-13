@@ -1,5 +1,6 @@
 import type { Units } from '../../src/domain/valueObjects/Units';
 import type { SegmentType } from '../../src/domain/valueObjects/SegmentType';
+import type { StepKind } from '../../src/domain/valueObjects/StepKind';
 
 export type UnitSystem = Units;
 
@@ -8,8 +9,12 @@ export type FieldSpec =
   | { mode: 'distance-pace'; distance: string; pace: string }
   | { mode: 'time-distance'; time: string; distance: string };
 
+/** One entry in an interval's ladder. `kind` defaults to `'work'` when
+ * omitted — only specify `'rest'` to place a rest between steps. */
+export type IntervalStepSpec = FieldSpec & { readonly kind?: StepKind };
+
 export interface IntervalSpec {
-  readonly steps: readonly FieldSpec[];
+  readonly steps: readonly IntervalStepSpec[];
   readonly reps?: number;
   /** Omit or pass null to leave rest-between-reps disabled. */
   readonly rest?: FieldSpec | null;

@@ -46,4 +46,18 @@ describe('interval segments', () => {
     });
     expect((await plan.totals()).time).toBe('5:00');
   });
+
+  test('a rest placed between two work steps adds its own time to the plan', async () => {
+    const plan = dsl.onPlan('Rest between steps').addInterval({
+      steps: [
+        { mode: 'distance-pace', distance: '0.4', pace: '5:00' },
+        { kind: 'rest', mode: 'time-distance', time: '1:30', distance: '0' },
+        { mode: 'distance-pace', distance: '0.4', pace: '5:00' },
+      ],
+      reps: 1,
+      rest: null,
+    });
+    expect((await plan.totals()).distance).toBe('0.8 km');
+    expect((await plan.totals()).time).toBe('5:30'); // 2:00 + 1:30 + 2:00
+  });
 });

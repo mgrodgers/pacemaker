@@ -1,6 +1,7 @@
 import type { Segment } from '../entities/Segment';
 import type { SegmentId } from '../valueObjects/Ids';
 import type { SegmentType } from '../valueObjects/SegmentType';
+import type { StepKind } from '../valueObjects/StepKind';
 
 export interface PlanInstance {
   readonly segmentId: SegmentId;
@@ -25,7 +26,7 @@ export interface PlanProfile {
   readonly totalTimeSec: number;
 }
 
-type TimedFields = { timeSec: number; distanceKm: number; paceSecPerKm: number | null };
+type TimedFields = { timeSec: number; distanceKm: number; paceSecPerKm: number | null; kind?: StepKind };
 
 function stepsOf(segment: Segment): readonly TimedFields[] {
   if (segment.type === 'interval' && segment.steps.length > 0) return segment.steps;
@@ -41,12 +42,14 @@ export function expandInstances(segments: readonly Segment[]): PlanInstance[] {
     const steps = stepsOf(segment);
     for (let i = 0; i < reps; i++) {
       for (const step of steps) {
+        const stepIsRest = step.kind === 'rest';
         out.push({
           segmentId: segment.id,
-          type: segment.type,
+          type: stepIsRest ? 'rest' : segment.type,
           timeSec: step.timeSec || 0,
           distanceKm: step.distanceKm || 0,
           paceSecPerKm: step.paceSecPerKm,
+          ...(stepIsRest ? { isRest: true } : {}),
         });
       }
       if (reps > 1 && segment.restEnabled && i < reps - 1) {

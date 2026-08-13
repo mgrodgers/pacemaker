@@ -2,6 +2,7 @@ import type { PlanId, SegmentId, StepId } from '../../../domain/valueObjects/Ids
 import type { Units } from '../../../domain/valueObjects/Units';
 import type { FieldMode, SegmentField } from '../../../domain/valueObjects/FieldMode';
 import type { SegmentType } from '../../../domain/valueObjects/SegmentType';
+import type { StepKind } from '../../../domain/valueObjects/StepKind';
 import type { BestEffortView, PlanDetail, PlanListItem, TotalsView } from '../../dto/PlanViews';
 
 /** Primary (driving) port: the one interface every driving adapter — the
@@ -28,10 +29,11 @@ export interface PlanningService {
   setRestMode(planId: PlanId, segmentId: SegmentId, mode: FieldMode): void;
   setRestField(planId: PlanId, segmentId: SegmentId, field: SegmentField, raw: string): void;
 
-  addIntervalStep(planId: PlanId, segmentId: SegmentId): StepId;
+  addIntervalStep(planId: PlanId, segmentId: SegmentId, kind?: StepKind): StepId;
   removeIntervalStep(planId: PlanId, segmentId: SegmentId, stepId: StepId): void;
   setStepMode(planId: PlanId, segmentId: SegmentId, stepId: StepId, mode: FieldMode): void;
   setStepField(planId: PlanId, segmentId: SegmentId, stepId: StepId, field: SegmentField, raw: string): void;
+  setStepKind(planId: PlanId, segmentId: SegmentId, stepId: StepId, kind: StepKind): void;
 
   getTotals(planId: PlanId): TotalsView;
   getBestEfforts(planId: PlanId): BestEffortView[];
