@@ -100,4 +100,10 @@ describe('newSegment', () => {
     expect(newSegment(segmentId('s1'), 'rest').steps).toEqual([]);
     expect(newSegment(segmentId('s1'), 'tempo').steps).toEqual([]);
   });
+
+  test('a new interval never gets a rest-kind step automatically — only "work" steps', () => {
+    const ids = [stepId('st1'), stepId('st2'), stepId('st3')];
+    const segment = newSegment(segmentId('s1'), 'interval', ids);
+    expect(segment.steps.every((s) => s.kind === 'work')).toBe(true);
+  });
 });
