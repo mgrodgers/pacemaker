@@ -113,21 +113,40 @@ export function SegmentCard({ segment, unitLabel, expanded, onToggleExpand, comm
                 Steps (one rep runs through all of these)
               </div>
               <div style={{ display: 'grid', gap: 'var(--space-2)' }}>
-                {segment.steps.map((step, idx) => (
-                  <StepEditor
-                    key={step.id}
-                    step={step}
-                    index={idx + 1}
-                    unitLabel={unitLabel}
-                    canRemove={segment.steps.length > 1}
-                    onModeChange={(mode) => commands.setStepMode(segment.id, step.id, mode)}
-                    onFieldChange={(field, raw) => commands.setStepField(segment.id, step.id, field, raw)}
-                    onRemove={() => commands.removeIntervalStep(segment.id, step.id)}
-                  />
-                ))}
-                <button type="button" className="btn btn-secondary" onClick={() => commands.addIntervalStep(segment.id)}>
-                  + Add step
-                </button>
+                {(() => {
+                  let workIndex = 0;
+                  return segment.steps.map((step) => {
+                    if (step.kind !== 'rest') workIndex += 1;
+                    return (
+                      <StepEditor
+                        key={step.id}
+                        step={step}
+                        index={workIndex}
+                        unitLabel={unitLabel}
+                        canRemove={segment.steps.length > 1}
+                        onModeChange={(mode) => commands.setStepMode(segment.id, step.id, mode)}
+                        onFieldChange={(field, raw) => commands.setStepField(segment.id, step.id, field, raw)}
+                        onRemove={() => commands.removeIntervalStep(segment.id, step.id)}
+                      />
+                    );
+                  });
+                })()}
+                <div style={{ display: 'flex', gap: 'var(--space-2)' }}>
+                  <button
+                    type="button"
+                    className="btn btn-secondary"
+                    onClick={() => commands.addIntervalStep(segment.id, 'work')}
+                  >
+                    + Add step
+                  </button>
+                  <button
+                    type="button"
+                    className="btn btn-secondary"
+                    onClick={() => commands.addIntervalStep(segment.id, 'rest')}
+                  >
+                    + Add rest
+                  </button>
+                </div>
               </div>
 
               <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-4)', marginTop: 'var(--space-4)', flexWrap: 'wrap' }}>

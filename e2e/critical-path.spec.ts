@@ -31,6 +31,19 @@ test('interval reps and rest-between-reps compute correctly through the real UI'
   expect((await plan.totals()).time).toBe('5:30');
 });
 
+test('adding a rest step between interval steps through the real UI updates totals', async ({ page }) => {
+  const dsl = new PlannerDsl(new UiPlannerDriver(page));
+  const plan = dsl.onPlan('E2E Rest Step').addInterval({
+    steps: [
+      { mode: 'distance-pace', distance: '0.4', pace: '5:00' },
+      { kind: 'rest', mode: 'time-distance', time: '1:00', distance: '0' },
+    ],
+    reps: 1,
+    rest: null,
+  });
+  expect((await plan.totals()).time).toBe('3:00'); // 2:00 work + 1:00 rest step
+});
+
 test('best potential efforts appear on the Results tab', async ({ page }) => {
   const dsl = new PlannerDsl(new UiPlannerDriver(page));
   const plan = dsl.onPlan('E2E Best Effort').addTempo({ mode: 'distance-pace', distance: '5', pace: '4:30' });

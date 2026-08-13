@@ -4,6 +4,7 @@ import type { PlanId, SegmentId, StepId } from '../../../../domain/valueObjects/
 import type { Units } from '../../../../domain/valueObjects/Units';
 import type { FieldMode, SegmentField } from '../../../../domain/valueObjects/FieldMode';
 import type { SegmentType } from '../../../../domain/valueObjects/SegmentType';
+import type { StepKind } from '../../../../domain/valueObjects/StepKind';
 
 /** Drives a single plan's builder/results screen. Same revision-bump
  * pattern as usePlansController, scoped to one plan id. */
@@ -46,7 +47,7 @@ export function usePlanController(planId: PlanId) {
       service.setRestField(planId, segmentId, field, raw)
     ),
 
-    addIntervalStep: run((segmentId: SegmentId) => service.addIntervalStep(planId, segmentId)),
+    addIntervalStep: run((segmentId: SegmentId, kind?: StepKind) => service.addIntervalStep(planId, segmentId, kind)),
     removeIntervalStep: run((segmentId: SegmentId, stepId: StepId) =>
       service.removeIntervalStep(planId, segmentId, stepId)
     ),

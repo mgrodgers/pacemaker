@@ -14,10 +14,13 @@ interface StepEditorProps {
 }
 
 export function StepEditor({ step, index, unitLabel, canRemove, onModeChange, onFieldChange, onRemove }: StepEditorProps) {
+  const isRest = step.kind === 'rest';
   return (
     <div data-testid="step-editor" style={{ border: '1px solid var(--color-neutral-700)', borderRadius: 8, padding: 'var(--space-3)' }}>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 'var(--space-2)' }}>
-        <span style={{ fontSize: 11, opacity: 0.6, textTransform: 'uppercase', letterSpacing: '0.06em' }}>Step {index}</span>
+        <span style={{ fontSize: 11, opacity: 0.6, textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+          {isRest ? 'Rest' : `Step ${index}`}
+        </span>
         {canRemove && (
           <button
             type="button"
@@ -37,9 +40,9 @@ export function StepEditor({ step, index, unitLabel, canRemove, onModeChange, on
         time={step.time}
         distance={step.distance}
         pace={step.pace}
-        timeLabel="Time"
-        distanceLabel={`Dist (${unitLabel})`}
-        paceLabel="Pace"
+        timeLabel={isRest ? 'Rest time' : 'Time'}
+        distanceLabel={isRest ? `Rest dist (${unitLabel})` : `Dist (${unitLabel})`}
+        paceLabel={isRest ? 'Rest pace' : 'Pace'}
         onModeChange={onModeChange}
         onFieldChange={onFieldChange}
       />
