@@ -88,4 +88,16 @@ describe('interval segments', () => {
     expect((await plan.totals()).distance).toBe('1.2 km');
     expect((await plan.totals()).time).toBe('7:30'); // 3x2:00 work + 1:00 + 0:30 rest
   });
+
+  test('the ladder summary shows a rest step distinctly from a work step', async () => {
+    const plan = dsl.onPlan('Rest step summary').addInterval({
+      steps: [
+        { mode: 'distance-pace', distance: '0.4', pace: '5:00' },
+        { kind: 'rest', mode: 'time-pace', time: '1:00', pace: '7:00' },
+      ],
+      reps: 1,
+      rest: null,
+    });
+    expect((await plan.segmentSummaries())[0]).toBe('0.4km@5:00, rest 1:00');
+  });
 });
