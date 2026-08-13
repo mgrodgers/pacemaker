@@ -72,4 +72,20 @@ describe('interval segments', () => {
     });
     expect((await plan.totals()).time).toBe('6:30'); // 5:00 work + 1:30 rest step
   });
+
+  test('multiple rests can sit between different steps in the same interval', async () => {
+    const plan = dsl.onPlan('Multiple rest steps').addInterval({
+      steps: [
+        { mode: 'distance-pace', distance: '0.4', pace: '5:00' },
+        { kind: 'rest', mode: 'time-distance', time: '1:00', distance: '0' },
+        { mode: 'distance-pace', distance: '0.4', pace: '5:00' },
+        { kind: 'rest', mode: 'time-distance', time: '0:30', distance: '0' },
+        { mode: 'distance-pace', distance: '0.4', pace: '5:00' },
+      ],
+      reps: 1,
+      rest: null,
+    });
+    expect((await plan.totals()).distance).toBe('1.2 km');
+    expect((await plan.totals()).time).toBe('7:30'); // 3x2:00 work + 1:00 + 0:30 rest
+  });
 });
