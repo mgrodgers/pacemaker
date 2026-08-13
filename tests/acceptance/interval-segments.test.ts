@@ -100,4 +100,18 @@ describe('interval segments', () => {
     });
     expect((await plan.segmentSummaries())[0]).toBe('0.4km@5:00, rest 1:00');
   });
+
+  test('a rest step repeats with the rest of the ladder across reps', async () => {
+    const plan = dsl.onPlan('Rest step repeats').addInterval({
+      steps: [
+        { mode: 'distance-pace', distance: '0.4', pace: '5:00' },
+        { kind: 'rest', mode: 'time-distance', time: '1:00', distance: '0' },
+      ],
+      reps: 2,
+      rest: null,
+    });
+    // 2 reps x (0.4km@5:00 = 2:00 + 1:00 rest) = 6:00
+    expect((await plan.totals()).distance).toBe('0.8 km');
+    expect((await plan.totals()).time).toBe('6:00');
+  });
 });
