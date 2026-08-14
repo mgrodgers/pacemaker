@@ -21,4 +21,12 @@ describe('default pace settings: configuring a default', () => {
     const plan = dsl.onPlan('Faster tempo').addSegmentUsingDefaults('tempo');
     expect((await plan.segmentSummaries())[0]).toBe('10:00 · 2km @ 5:00/km');
   });
+
+  test('changing a default pace later does not change the pace of segments already added', async () => {
+    await dsl.setDefaultPace('tempo', '5:00');
+    const plan = dsl.onPlan('Locked-in tempo').addSegmentUsingDefaults('tempo');
+    await plan.segmentSummaries(); // force the segment to actually be added before the default changes
+    await dsl.setDefaultPace('tempo', '4:45');
+    expect((await plan.segmentSummaries())[0]).toBe('10:00 · 2km @ 5:00/km');
+  });
 });
