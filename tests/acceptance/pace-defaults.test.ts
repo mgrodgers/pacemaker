@@ -60,4 +60,15 @@ describe('default pace settings: unified rest handling', () => {
     expect((await plan.totals()).distance).toBe('0.55 km');
     expect((await plan.totals()).time).toBe('3:30');
   });
+
+  test('"rest between reps" on an interval uses the configured rest default pace', async () => {
+    await dsl.setDefaultPace('rest', '10:00'); // 600 sec/km
+    // Everything else (3 work steps, 4 reps, rest-between-reps enabled) is
+    // the app's built-in interval preset, left unconfigured.
+    const plan = dsl.onPlan('Interval with rest between reps').addSegmentUsingDefaults('interval');
+    // work: 4 reps x 3 steps x (0.4km @ built-in 5:00/km = 2:00) = 28:00, 4.8km
+    // rest: fires 3 times (reps - 1), each 90s @ configured 10:00/km => 0.15km
+    expect((await plan.totals()).time).toBe('28:30');
+    expect((await plan.totals()).distance).toBe('5.25 km');
+  });
 });
