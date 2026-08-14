@@ -37,3 +37,11 @@ describe('default pace settings: configuring a default', () => {
     expect((await plan.segmentSummaries())[0]).toBe('16:47 · 3km @ 5:36/km');
   });
 });
+
+describe('default pace settings: unified rest handling', () => {
+  test('a standalone rest segment added via defaults uses time-pace mode with the configured rest default pace', async () => {
+    await dsl.setDefaultPace('rest', '10:00');
+    const plan = dsl.onPlan('Rest segment').addSegmentUsingDefaults('rest');
+    expect((await plan.segmentSummaries())[0]).toBe('1:30 · 0.15km @ 10:00/km');
+  });
+});
