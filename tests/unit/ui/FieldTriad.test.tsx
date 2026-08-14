@@ -75,6 +75,26 @@ describe('FieldTriad', () => {
     expect(screen.getByLabelText('Time (mm:ss)')).toHaveValue('12:30');
   });
 
+  test('typing digits into the pace field auto-formats them with a colon', async () => {
+    const user = userEvent.setup();
+    const changes: Array<[string, string]> = [];
+    render(
+      <FieldTriad
+        name="seg1"
+        unitLabel="km"
+        mode="distance-pace"
+        time={{ value: '10:00', editable: false }}
+        distance={{ value: '2', editable: true }}
+        pace={{ value: '', editable: true }}
+        onModeChange={() => {}}
+        onFieldChange={(field, raw) => changes.push([field, raw])}
+      />
+    );
+    await user.type(screen.getByLabelText('Pace (/km)'), '530');
+    expect(changes.at(-1)).toEqual(['pace', '5:30']);
+    expect(screen.getByLabelText('Pace (/km)')).toHaveValue('5:30');
+  });
+
   test('editing an editable field calls onFieldChange with the field name and raw value', async () => {
     const user = userEvent.setup();
     const changes: Array<[string, string]> = [];

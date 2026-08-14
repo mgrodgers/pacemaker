@@ -78,7 +78,7 @@ export function FieldTriad({
         </div>
         <div className="field">
           <label htmlFor={`${name}-pace`}>{paceLabel ?? `Pace (/${unitLabel})`}</label>
-          <input id={`${name}-pace`} className="input" inputMode="numeric" {...bind('pace', pace)} />
+          <input id={`${name}-pace`} className="input" inputMode="numeric" {...bind('pace', pace, true)} />
         </div>
       </div>
     </>
