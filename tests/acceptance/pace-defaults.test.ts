@@ -44,4 +44,20 @@ describe('default pace settings: unified rest handling', () => {
     const plan = dsl.onPlan('Rest segment').addSegmentUsingDefaults('rest');
     expect((await plan.segmentSummaries())[0]).toBe('1:30 · 0.15km @ 10:00/km');
   });
+
+  test('a rest step added to an interval uses the configured rest default pace', async () => {
+    await dsl.setDefaultPace('rest', '10:00');
+    const plan = dsl
+      .onPlan('Interval with rest step')
+      .addInterval({
+        steps: [{ mode: 'distance-pace', distance: '0.4', pace: '5:00' }],
+        reps: 1,
+        rest: null,
+      })
+      .addStepToInterval(0, 'rest');
+    // work: 0.4km@5:00 = 2:00. rest step: default time 90s (unchanged) at
+    // the configured 10:00/km pace => distance = 90/600 = 0.15km.
+    expect((await plan.totals()).distance).toBe('0.55 km');
+    expect((await plan.totals()).time).toBe('3:30');
+  });
 });

@@ -1,6 +1,7 @@
 import type { Locator, Page } from '@playwright/test';
 import type { FieldMode } from '../../src/domain/valueObjects/FieldMode';
 import type { SegmentType } from '../../src/domain/valueObjects/SegmentType';
+import type { StepKind } from '../../src/domain/valueObjects/StepKind';
 import type { EffortView, FieldSpec, IntervalSpec, PlannerDriver, TotalsView, UnitSystem } from './PlannerDriver';
 
 const SEGMENT_LABEL: Record<Exclude<SegmentType, never>, string> = {
@@ -91,6 +92,14 @@ export class UiPlannerDriver implements PlannerDriver {
     await this.ensureOnPlan(planName);
     await this.ensureBuilderSubview();
     await this.page.getByRole('button', { name: SEGMENT_LABEL[type], exact: true }).click();
+  }
+
+  async addStepToInterval(planName: string, segmentIndex: number, kind: StepKind): Promise<void> {
+    await this.ensureOnPlan(planName);
+    await this.ensureBuilderSubview();
+    const card = this.page.getByTestId('segment-card').nth(segmentIndex);
+    const buttonName = kind === 'rest' ? '+ Add rest' : '+ Add step';
+    await card.getByRole('button', { name: buttonName }).click();
   }
 
   async addIntervalSegment(planName: string, spec: IntervalSpec): Promise<void> {

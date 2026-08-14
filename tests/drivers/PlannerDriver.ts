@@ -65,6 +65,10 @@ export interface PlannerDriver {
    * land wherever the app's current defaults (configured or built-in
    * fallback) put them — the only way to observe raw default application. */
   addSegmentUsingDefaults(planName: string, type: SegmentType): Promise<void>;
+  /** Appends one step to an *existing* interval segment (the "+ Add
+   * step"/"+ Add rest" action), with no explicit field spec, so its pace
+   * lands wherever the app's default-inheritance rule puts it. */
+  addStepToInterval(planName: string, segmentIndex: number, kind: StepKind): Promise<void>;
   removeSegment(planName: string, segmentIndex: number): Promise<void>;
   moveSegment(planName: string, fromIndex: number, toIndex: number): Promise<void>;
 

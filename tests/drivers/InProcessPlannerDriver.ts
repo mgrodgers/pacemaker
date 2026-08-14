@@ -4,6 +4,7 @@ import { InMemoryPaceDefaultsRepository } from '../../src/adapters/driven/persis
 import type { IdGenerator } from '../../src/application/ports/out/IdGenerator';
 import { planId, segmentId, stepId, type PlanId, type SegmentId, type StepId } from '../../src/domain/valueObjects/Ids';
 import type { SegmentType } from '../../src/domain/valueObjects/SegmentType';
+import type { StepKind } from '../../src/domain/valueObjects/StepKind';
 import type { FieldMode, SegmentField } from '../../src/domain/valueObjects/FieldMode';
 import type { EffortView, FieldSpec, IntervalSpec, PlannerDriver, TotalsView, UnitSystem } from './PlannerDriver';
 
@@ -120,6 +121,12 @@ export class InProcessPlannerDriver implements PlannerDriver {
 
   async addSegmentUsingDefaults(planName: string, type: SegmentType): Promise<void> {
     this.service.addSegment(this.idFor(planName), type);
+  }
+
+  async addStepToInterval(planName: string, segmentIndex: number, kind: StepKind): Promise<void> {
+    const pid = this.idFor(planName);
+    const segId = this.service.getPlan(pid).segments[segmentIndex]!.id;
+    this.service.addIntervalStep(pid, segId, kind);
   }
 
   async removeSegment(planName: string, segmentIndex: number): Promise<void> {
