@@ -95,6 +95,25 @@ describe('FieldTriad', () => {
     expect(screen.getByLabelText('Pace (/km)')).toHaveValue('5:30');
   });
 
+  test('the distance field is unaffected by mm:ss auto-formatting', async () => {
+    const user = userEvent.setup();
+    const changes: Array<[string, string]> = [];
+    render(
+      <FieldTriad
+        name="seg1"
+        unitLabel="km"
+        mode="distance-pace"
+        time={{ value: '10:00', editable: false }}
+        distance={{ value: '', editable: true }}
+        pace={{ value: '5:00', editable: true }}
+        onModeChange={() => {}}
+        onFieldChange={(field, raw) => changes.push([field, raw])}
+      />
+    );
+    await user.type(screen.getByLabelText('Distance (km)'), '5.2');
+    expect(changes.at(-1)).toEqual(['distance', '5.2']);
+  });
+
   test('editing an editable field calls onFieldChange with the field name and raw value', async () => {
     const user = userEvent.setup();
     const changes: Array<[string, string]> = [];
