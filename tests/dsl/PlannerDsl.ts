@@ -1,4 +1,5 @@
 import type { EffortView, FieldSpec, IntervalSpec, PlannerDriver, TotalsView, UnitSystem } from '../drivers/PlannerDriver';
+import type { SegmentType } from '../../src/domain/valueObjects/SegmentType';
 
 /**
  * Layer 2 (DSL): the vocabulary every Layer-1 acceptance test is written
@@ -62,6 +63,12 @@ export class PlanBuilder {
 
   addInterval(spec: IntervalSpec): this {
     return this.enqueue(() => this.driver.addIntervalSegment(this.name, spec));
+  }
+
+  /** Adds a segment with no explicit field spec, observing whatever the
+   * app's current defaults (configured or built-in fallback) produce. */
+  addSegmentUsingDefaults(type: SegmentType): this {
+    return this.enqueue(() => this.driver.addSegmentUsingDefaults(this.name, type));
   }
 
   removeSegment(index: number): this {

@@ -53,6 +53,10 @@ export interface PlannerDriver {
 
   addSegment(planName: string, type: Exclude<SegmentType, 'interval'>, spec: FieldSpec): Promise<void>;
   addIntervalSegment(planName: string, spec: IntervalSpec): Promise<void>;
+  /** Adds a segment of any type with no explicit field spec, so its fields
+   * land wherever the app's current defaults (configured or built-in
+   * fallback) put them — the only way to observe raw default application. */
+  addSegmentUsingDefaults(planName: string, type: SegmentType): Promise<void>;
   removeSegment(planName: string, segmentIndex: number): Promise<void>;
   moveSegment(planName: string, fromIndex: number, toIndex: number): Promise<void>;
 

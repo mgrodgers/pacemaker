@@ -108,6 +108,10 @@ export class InProcessPlannerDriver implements PlannerDriver {
     }
   }
 
+  async addSegmentUsingDefaults(planName: string, type: SegmentType): Promise<void> {
+    this.service.addSegment(this.idFor(planName), type);
+  }
+
   async removeSegment(planName: string, segmentIndex: number): Promise<void> {
     const pid = this.idFor(planName);
     const segId = this.service.getPlan(pid).segments[segmentIndex]!.id;

@@ -77,6 +77,12 @@ export class UiPlannerDriver implements PlannerDriver {
     await this.fillFieldTriad(card.getByTestId('segment-fields'), spec);
   }
 
+  async addSegmentUsingDefaults(planName: string, type: SegmentType): Promise<void> {
+    await this.ensureOnPlan(planName);
+    await this.ensureBuilderSubview();
+    await this.page.getByRole('button', { name: SEGMENT_LABEL[type], exact: true }).click();
+  }
+
   async addIntervalSegment(planName: string, spec: IntervalSpec): Promise<void> {
     await this.ensureOnPlan(planName);
     await this.ensureBuilderSubview();
