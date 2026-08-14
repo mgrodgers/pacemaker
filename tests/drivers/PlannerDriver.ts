@@ -44,6 +44,14 @@ export interface TotalsView {
  * in-process driver resolves immediately.
  */
 export interface PlannerDriver {
+  /** Global, not plan-scoped: the settings page's own unit choice for
+   * entering default paces. */
+  setDefaultPaceUnits(units: UnitSystem): Promise<void>;
+  /** Global, not plan-scoped: configures one segment type's default pace,
+   * parsed in whatever units `setDefaultPaceUnits` last set (km if never
+   * called). */
+  setDefaultPace(type: SegmentType, raw: string): Promise<void>;
+
   planNames(): Promise<string[]>;
   createPlan(name: string): Promise<void>;
   renamePlan(currentName: string, newName: string): Promise<void>;
@@ -53,6 +61,14 @@ export interface PlannerDriver {
 
   addSegment(planName: string, type: Exclude<SegmentType, 'interval'>, spec: FieldSpec): Promise<void>;
   addIntervalSegment(planName: string, spec: IntervalSpec): Promise<void>;
+  /** Adds a segment of any type with no explicit field spec, so its fields
+   * land wherever the app's current defaults (configured or built-in
+   * fallback) put them — the only way to observe raw default application. */
+  addSegmentUsingDefaults(planName: string, type: SegmentType): Promise<void>;
+  /** Appends one step to an *existing* interval segment (the "+ Add
+   * step"/"+ Add rest" action), with no explicit field spec, so its pace
+   * lands wherever the app's default-inheritance rule puts it. */
+  addStepToInterval(planName: string, segmentIndex: number, kind: StepKind): Promise<void>;
   removeSegment(planName: string, segmentIndex: number): Promise<void>;
   moveSegment(planName: string, fromIndex: number, toIndex: number): Promise<void>;
 

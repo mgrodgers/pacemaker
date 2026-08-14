@@ -18,7 +18,7 @@ describe('PlansScreen', () => {
   test('creating a new plan opens it', async () => {
     const user = userEvent.setup();
     const opened: PlanId[] = [];
-    render(<PlansScreen onOpenPlan={(id) => opened.push(id)} />);
+    render(<PlansScreen onOpenPlan={(id) => opened.push(id)} onOpenSettings={() => {}} />);
 
     await user.click(screen.getByRole('button', { name: 'New plan' }));
     expect(opened).toHaveLength(1);
@@ -28,7 +28,7 @@ describe('PlansScreen', () => {
   test('clicking an existing plan card opens that plan', async () => {
     const user = userEvent.setup();
     const opened: PlanId[] = [];
-    render(<PlansScreen onOpenPlan={(id) => opened.push(id)} />);
+    render(<PlansScreen onOpenPlan={(id) => opened.push(id)} onOpenSettings={() => {}} />);
 
     await user.click(screen.getByRole('button', { name: 'New plan' }));
     const createdId = opened[0]!;
@@ -41,7 +41,7 @@ describe('PlansScreen', () => {
 
   test('rename, duplicate, and delete keep the list in sync', async () => {
     const user = userEvent.setup();
-    render(<PlansScreen onOpenPlan={() => {}} />);
+    render(<PlansScreen onOpenPlan={() => {}} onOpenSettings={() => {}} />);
     await user.click(screen.getByRole('button', { name: 'New plan' }));
     const countBeforeActions = screen.getAllByTestId('plan-card').length;
 

@@ -50,6 +50,13 @@ test('best potential efforts appear on the Results tab', async ({ page }) => {
   expect(await plan.bestEffort('5k')).toEqual({ time: '22:30', pace: '4:30/km' });
 });
 
+test('setting a default pace on the settings page prefills a matching new segment', async ({ page }) => {
+  const dsl = new PlannerDsl(new UiPlannerDriver(page));
+  await dsl.setDefaultPace('tempo', '5:00');
+  const plan = dsl.onPlan('E2E Default Pace').addSegmentUsingDefaults('tempo');
+  expect((await plan.segmentSummaries())[0]).toBe('10:00 · 2km @ 5:00/km');
+});
+
 test('renaming, duplicating, and deleting a plan works end to end', async ({ page }) => {
   const dsl = new PlannerDsl(new UiPlannerDriver(page));
   const renamed = dsl

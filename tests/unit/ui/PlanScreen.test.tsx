@@ -14,7 +14,7 @@ describe('PlanScreen', () => {
     const service = getPlanningService();
     const planId = service.createPlan('Smoke test plan');
 
-    render(<PlanScreen planId={planId} onBack={() => {}} />);
+    render(<PlanScreen planId={planId} onBack={() => {}} onOpenSettings={() => {}} />);
     await user.click(screen.getByRole('button', { name: 'Tempo' }));
 
     expect(screen.getByTestId('segment-fields')).toBeInTheDocument();
@@ -30,6 +30,7 @@ describe('PlanScreen', () => {
     render(
       <PlanScreen
         planId={planId}
+        onOpenSettings={() => {}}
         onBack={() => {
           wentBack = true;
         }}
@@ -44,7 +45,7 @@ describe('PlanScreen', () => {
     const service = getPlanningService();
     const planId = service.createPlan('Results check');
 
-    render(<PlanScreen planId={planId} onBack={() => {}} />);
+    render(<PlanScreen planId={planId} onBack={() => {}} onOpenSettings={() => {}} />);
     await user.click(screen.getByText('Results'));
     expect(screen.getByText('Plan summary')).toBeInTheDocument();
   });

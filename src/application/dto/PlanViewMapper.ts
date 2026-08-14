@@ -4,14 +4,16 @@ import type { Step } from '../../domain/entities/Step';
 import type { Units } from '../../domain/valueObjects/Units';
 import type { StepKind } from '../../domain/valueObjects/StepKind';
 import { isFieldEditable } from '../../domain/valueObjects/FieldMode';
-import { SEGMENT_TYPE_META } from '../../domain/valueObjects/SegmentType';
+import { SEGMENT_TYPES, SEGMENT_TYPE_META } from '../../domain/valueObjects/SegmentType';
 import { Duration } from '../../domain/valueObjects/Duration';
 import { Distance } from '../../domain/valueObjects/Distance';
 import { Pace } from '../../domain/valueObjects/Pace';
+import type { PaceDefaults } from '../../domain/valueObjects/PaceDefaults';
 import { summarizePlan } from '../../domain/services/PlanSummaryCalculator';
 import type {
   BestEffortView,
   FieldView,
+  PaceDefaultsView,
   PlanDetail,
   PlanListItem,
   SegmentDetail,
@@ -118,6 +120,20 @@ export function toPlanListItem(plan: Plan): PlanListItem {
     id: plan.id,
     name: plan.name,
     statsText: `${totals.distance} · ${totals.time} · ${totals.pace}`,
+  };
+}
+
+export function toPaceDefaultsView(defaults: PaceDefaults): PaceDefaultsView {
+  return {
+    units: defaults.units,
+    entries: SEGMENT_TYPES.map((type) => {
+      const pace = Pace.ofSecPerKm(defaults.paceSecPerKm[type] ?? null);
+      return {
+        type,
+        typeLabel: SEGMENT_TYPE_META[type].label,
+        value: pace.isKnown ? pace.format(defaults.units) : '',
+      };
+    }),
   };
 }
 

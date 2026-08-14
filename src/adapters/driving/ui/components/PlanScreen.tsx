@@ -4,18 +4,19 @@ import { SegmentList } from './SegmentList';
 import { SegmentTypeChips } from './SegmentTypeChips';
 import { TotalsBar } from './TotalsBar';
 import { ResultsPanel } from './ResultsPanel';
-import { BackIcon } from './icons';
+import { BackIcon, SettingsIcon } from './icons';
 import type { PlanId, SegmentId } from '../../../../domain/valueObjects/Ids';
 import type { SegmentType } from '../../../../domain/valueObjects/SegmentType';
 
 interface PlanScreenProps {
   planId: PlanId;
   onBack: () => void;
+  onOpenSettings: () => void;
 }
 
 type Subview = 'builder' | 'results';
 
-export function PlanScreen({ planId, onBack }: PlanScreenProps) {
+export function PlanScreen({ planId, onBack, onOpenSettings }: PlanScreenProps) {
   const controller = usePlanController(planId);
   const [subview, setSubview] = useState<Subview>('builder');
   const [expandedId, setExpandedId] = useState<SegmentId | null>(null);
@@ -31,7 +32,16 @@ export function PlanScreen({ planId, onBack }: PlanScreenProps) {
     <>
       <nav className="nav" style={{ position: 'sticky', top: 0, zIndex: 5, background: 'var(--color-bg)' }}>
         <span className="nav-brand">Run Planner</span>
-        <button type="button" className="btn btn-ghost btn-icon" aria-label="Back to plans" style={{ marginLeft: 'auto' }} onClick={onBack}>
+        <button
+          type="button"
+          className="btn btn-ghost btn-icon"
+          aria-label="Default paces"
+          style={{ marginLeft: 'auto' }}
+          onClick={onOpenSettings}
+        >
+          <SettingsIcon />
+        </button>
+        <button type="button" className="btn btn-ghost btn-icon" aria-label="Back to plans" onClick={onBack}>
           <BackIcon />
         </button>
       </nav>

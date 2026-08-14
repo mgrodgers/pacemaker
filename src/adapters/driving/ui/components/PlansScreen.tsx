@@ -1,13 +1,14 @@
 import { useState } from 'react';
 import { usePlansController } from '../hooks/usePlansController';
 import type { PlanId } from '../../../../domain/valueObjects/Ids';
-import { PlusIcon, RenameIcon, DuplicateIcon, DeleteIcon } from './icons';
+import { PlusIcon, RenameIcon, DuplicateIcon, DeleteIcon, SettingsIcon } from './icons';
 
 interface PlansScreenProps {
   onOpenPlan: (id: PlanId) => void;
+  onOpenSettings: () => void;
 }
 
-export function PlansScreen({ onOpenPlan }: PlansScreenProps) {
+export function PlansScreen({ onOpenPlan, onOpenSettings }: PlansScreenProps) {
   const { plans, createPlan, renamePlan, duplicatePlan, deletePlan } = usePlansController();
   const [renamingId, setRenamingId] = useState<PlanId | null>(null);
   const [renameValue, setRenameValue] = useState('');
@@ -18,11 +19,14 @@ export function PlansScreen({ onOpenPlan }: PlansScreenProps) {
         <span className="nav-brand">Run Planner</span>
         <button
           type="button"
-          className="btn btn-primary btn-icon"
-          aria-label="New plan"
+          className="btn btn-ghost btn-icon"
+          aria-label="Default paces"
           style={{ marginLeft: 'auto' }}
-          onClick={() => onOpenPlan(createPlan())}
+          onClick={onOpenSettings}
         >
+          <SettingsIcon />
+        </button>
+        <button type="button" className="btn btn-primary btn-icon" aria-label="New plan" onClick={() => onOpenPlan(createPlan())}>
           <PlusIcon />
         </button>
       </nav>

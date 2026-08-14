@@ -1,8 +1,10 @@
 import { PlanningServiceImpl } from '../../src/application/PlanningServiceImpl';
 import { InMemoryPlanRepository } from '../../src/adapters/driven/persistence/InMemoryPlanRepository';
+import { InMemoryPaceDefaultsRepository } from '../../src/adapters/driven/persistence/InMemoryPaceDefaultsRepository';
 import type { IdGenerator } from '../../src/application/ports/out/IdGenerator';
 import { planId, segmentId, stepId, type PlanId, type SegmentId, type StepId } from '../../src/domain/valueObjects/Ids';
 import type { SegmentType } from '../../src/domain/valueObjects/SegmentType';
+import type { StepKind } from '../../src/domain/valueObjects/StepKind';
 import type { FieldMode, SegmentField } from '../../src/domain/valueObjects/FieldMode';
 import type { EffortView, FieldSpec, IntervalSpec, PlannerDriver, TotalsView, UnitSystem } from './PlannerDriver';
 
@@ -28,8 +30,17 @@ class SequentialIdGenerator implements IdGenerator {
  */
 export class InProcessPlannerDriver implements PlannerDriver {
   private readonly repository = new InMemoryPlanRepository();
-  private readonly service = new PlanningServiceImpl(this.repository, new SequentialIdGenerator());
+  private readonly paceDefaultsRepository = new InMemoryPaceDefaultsRepository();
+  private readonly service = new PlanningServiceImpl(this.repository, new SequentialIdGenerator(), this.paceDefaultsRepository);
   private readonly idsByName = new Map<string, PlanId>();
+
+  async setDefaultPaceUnits(units: UnitSystem): Promise<void> {
+    this.service.setPaceDefaultsUnits(units);
+  }
+
+  async setDefaultPace(type: SegmentType, raw: string): Promise<void> {
+    this.service.setPaceDefault(type, raw);
+  }
 
   async planNames(): Promise<string[]> {
     return this.service.listPlans().map((p) => p.name);
@@ -106,6 +117,16 @@ export class InProcessPlannerDriver implements PlannerDriver {
         (mode) => this.service.setRestMode(pid, segId, mode)
       );
     }
+  }
+
+  async addSegmentUsingDefaults(planName: string, type: SegmentType): Promise<void> {
+    this.service.addSegment(this.idFor(planName), type);
+  }
+
+  async addStepToInterval(planName: string, segmentIndex: number, kind: StepKind): Promise<void> {
+    const pid = this.idFor(planName);
+    const segId = this.service.getPlan(pid).segments[segmentIndex]!.id;
+    this.service.addIntervalStep(pid, segId, kind);
   }
 
   async removeSegment(planName: string, segmentIndex: number): Promise<void> {

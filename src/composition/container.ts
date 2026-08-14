@@ -1,6 +1,7 @@
 import { PlanningServiceImpl } from '../application/PlanningServiceImpl';
 import { seedExamplePlanIfEmpty } from '../application/ExamplePlanSeeder';
 import { LocalStoragePlanRepository } from '../adapters/driven/persistence/LocalStoragePlanRepository';
+import { LocalStoragePaceDefaultsRepository } from '../adapters/driven/persistence/LocalStoragePaceDefaultsRepository';
 import { RandomIdGenerator } from '../adapters/driven/persistence/IdGenerator';
 import type { PlanningService } from '../application/ports/in/PlanningService';
 
@@ -12,9 +13,10 @@ let service: PlanningService | null = null;
 export function getPlanningService(): PlanningService {
   if (!service) {
     const repository = new LocalStoragePlanRepository();
+    const paceDefaultsRepository = new LocalStoragePaceDefaultsRepository();
     const idGenerator = new RandomIdGenerator();
     seedExamplePlanIfEmpty(repository, idGenerator);
-    service = new PlanningServiceImpl(repository, idGenerator);
+    service = new PlanningServiceImpl(repository, idGenerator, paceDefaultsRepository);
   }
   return service;
 }

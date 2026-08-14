@@ -1,4 +1,6 @@
 import type { EffortView, FieldSpec, IntervalSpec, PlannerDriver, TotalsView, UnitSystem } from '../drivers/PlannerDriver';
+import type { SegmentType } from '../../src/domain/valueObjects/SegmentType';
+import type { StepKind } from '../../src/domain/valueObjects/StepKind';
 
 /**
  * Layer 2 (DSL): the vocabulary every Layer-1 acceptance test is written
@@ -21,6 +23,19 @@ export class PlannerDsl {
       if (!names.includes(name)) await this.driver.createPlan(name);
     });
     return new PlanBuilder(this.driver, name, queue);
+  }
+
+  /** Global, not plan-scoped — the default-pace settings page's own unit
+   * choice. Set this before setDefaultPace calls that should be parsed in
+   * that unit system. */
+  async setDefaultPaceUnits(units: UnitSystem): Promise<void> {
+    await this.driver.setDefaultPaceUnits(units);
+  }
+
+  /** Global, not plan-scoped — configures one segment type's default
+   * pace. */
+  async setDefaultPace(type: SegmentType, raw: string): Promise<void> {
+    await this.driver.setDefaultPace(type, raw);
   }
 }
 
@@ -62,6 +77,19 @@ export class PlanBuilder {
 
   addInterval(spec: IntervalSpec): this {
     return this.enqueue(() => this.driver.addIntervalSegment(this.name, spec));
+  }
+
+  /** Adds a segment with no explicit field spec, observing whatever the
+   * app's current defaults (configured or built-in fallback) produce. */
+  addSegmentUsingDefaults(type: SegmentType): this {
+    return this.enqueue(() => this.driver.addSegmentUsingDefaults(this.name, type));
+  }
+
+  /** Appends one step to an existing interval segment (by index), with no
+   * explicit field spec, observing wherever default-inheritance puts its
+   * pace. */
+  addStepToInterval(segmentIndex: number, kind: StepKind = 'work'): this {
+    return this.enqueue(() => this.driver.addStepToInterval(this.name, segmentIndex, kind));
   }
 
   removeSegment(index: number): this {
