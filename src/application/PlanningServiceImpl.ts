@@ -5,6 +5,7 @@ import type { PlanId, SegmentId, StepId } from '../domain/valueObjects/Ids';
 import type { Units } from '../domain/valueObjects/Units';
 import type { FieldMode, SegmentField } from '../domain/valueObjects/FieldMode';
 import type { SegmentType } from '../domain/valueObjects/SegmentType';
+import type { StepKind } from '../domain/valueObjects/StepKind';
 import { computeDerived, makeStep, newSegment, type DerivedFields } from '../domain/services/SegmentCalculator';
 import { Duration } from '../domain/valueObjects/Duration';
 import { Distance } from '../domain/valueObjects/Distance';
@@ -157,12 +158,12 @@ export class PlanningServiceImpl implements PlanningService {
     );
   }
 
-  addIntervalStep(planId: PlanId, segmentId: SegmentId): StepId {
+  addIntervalStep(planId: PlanId, segmentId: SegmentId, kind: StepKind = 'work'): StepId {
     const stepId = this.idGenerator.newStepId();
     this.updateSegments(planId, (segments) =>
       this.mapSegment(segments, segmentId, (segment) => ({
         ...segment,
-        steps: [...segment.steps, makeStep(stepId)],
+        steps: [...segment.steps, makeStep(stepId, { kind })],
       }))
     );
     return stepId;
@@ -194,6 +195,15 @@ export class PlanningServiceImpl implements PlanningService {
           ...step,
           ...this.applyFieldEdit(step.mode, step, field, raw, plan.units),
         })),
+      }))
+    );
+  }
+
+  setStepKind(planId: PlanId, segmentId: SegmentId, stepId: StepId, kind: StepKind): void {
+    this.updateSegments(planId, (segments) =>
+      this.mapSegment(segments, segmentId, (segment) => ({
+        ...segment,
+        steps: this.mapStep(segment.steps, stepId, (step) => ({ ...step, kind })),
       }))
     );
   }

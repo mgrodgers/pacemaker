@@ -2,6 +2,7 @@ import type { Plan } from '../../domain/entities/Plan';
 import type { Segment } from '../../domain/entities/Segment';
 import type { Step } from '../../domain/entities/Step';
 import type { Units } from '../../domain/valueObjects/Units';
+import type { StepKind } from '../../domain/valueObjects/StepKind';
 import { isFieldEditable } from '../../domain/valueObjects/FieldMode';
 import { SEGMENT_TYPE_META } from '../../domain/valueObjects/SegmentType';
 import { Duration } from '../../domain/valueObjects/Duration';
@@ -30,7 +31,13 @@ function paceField(mode: Segment['mode'], secPerKm: number | null, units: Units)
   return { value: Pace.ofSecPerKm(secPerKm).format(units), editable: isFieldEditable(mode, 'pace') };
 }
 
-function summarizeStep(step: Pick<Step, 'timeSec' | 'distanceKm' | 'paceSecPerKm'>, units: Units): string {
+function summarizeStep(
+  step: { timeSec: number; distanceKm: number; paceSecPerKm: number | null; kind?: StepKind },
+  units: Units
+): string {
+  if (step.kind === 'rest') {
+    return `rest ${Duration.ofSeconds(step.timeSec).format()}`;
+  }
   if (step.distanceKm > 0) {
     return `${Distance.ofKm(step.distanceKm).format(units)}${units}@${Pace.ofSecPerKm(step.paceSecPerKm).format(units)}`;
   }
@@ -57,6 +64,7 @@ function summarizeSegment(segment: Segment, units: Units): string {
 function toStepDetail(step: Step, units: Units): StepDetail {
   return {
     id: step.id,
+    kind: step.kind,
     mode: step.mode,
     time: timeField(step.mode, step.timeSec),
     distance: distanceField(step.mode, step.distanceKm, units),

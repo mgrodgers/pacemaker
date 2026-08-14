@@ -85,12 +85,13 @@ export class UiPlannerDriver implements PlannerDriver {
 
     const steps = card.getByTestId('step-editor');
     let count = await steps.count();
-    while (count < spec.steps.length) {
-      await card.getByRole('button', { name: '+ Add step' }).click();
-      count = await steps.count();
-    }
     while (count > spec.steps.length) {
       await steps.last().getByRole('button', { name: 'Remove step' }).click();
+      count = await steps.count();
+    }
+    while (count < spec.steps.length) {
+      const buttonName = spec.steps[count]!.kind === 'rest' ? '+ Add rest' : '+ Add step';
+      await card.getByRole('button', { name: buttonName }).click();
       count = await steps.count();
     }
     for (let i = 0; i < spec.steps.length; i++) {

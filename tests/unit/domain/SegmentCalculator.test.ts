@@ -47,6 +47,24 @@ describe('makeStep', () => {
     const step = makeStep(stepId('st1'), { mode: 'time-pace', timeSec: 120, paceSecPerKm: 300 });
     expect(step.distanceKm).toBeCloseTo(0.4, 5);
   });
+
+  test('defaults to kind "work" when not specified', () => {
+    expect(makeStep(stepId('st1')).kind).toBe('work');
+  });
+
+  test('a "rest" kind step defaults to a time+pace recovery entry, not a paceless stop', () => {
+    const step = makeStep(stepId('st1'), { kind: 'rest' });
+    expect(step.kind).toBe('rest');
+    expect(step.mode).toBe('time-pace');
+    expect(step.timeSec).toBe(90);
+    expect(step.paceSecPerKm).not.toBeNull();
+    expect(step.distanceKm).toBeGreaterThan(0);
+  });
+
+  test('overrides still apply on top of the kind-specific defaults', () => {
+    const step = makeStep(stepId('st1'), { kind: 'rest', timeSec: 60 });
+    expect(step.timeSec).toBe(60);
+  });
 });
 
 describe('newSegment', () => {
@@ -81,5 +99,11 @@ describe('newSegment', () => {
   test('non-interval types never get a steps ladder', () => {
     expect(newSegment(segmentId('s1'), 'rest').steps).toEqual([]);
     expect(newSegment(segmentId('s1'), 'tempo').steps).toEqual([]);
+  });
+
+  test('a new interval never gets a rest-kind step automatically — only "work" steps', () => {
+    const ids = [stepId('st1'), stepId('st2'), stepId('st3')];
+    const segment = newSegment(segmentId('s1'), 'interval', ids);
+    expect(segment.steps.every((s) => s.kind === 'work')).toBe(true);
   });
 });

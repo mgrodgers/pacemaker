@@ -84,6 +84,7 @@ export class InProcessPlannerDriver implements PlannerDriver {
       steps = this.stepsOf(pid, segId);
     }
     steps.forEach((step, i) => {
+      this.service.setStepKind(pid, segId, step.id, spec.steps[i]!.kind ?? 'work');
       this.applyFields(
         spec.steps[i]!,
         (field, raw) => this.service.setStepField(pid, segId, step.id, field, raw),
