@@ -51,3 +51,17 @@ All development in this repo — features, fixes, refactors — follows strict T
 3. **Wait for plan approval** before writing any code.
 4. **Implement in strict TDD cycles: red → green → commit, repeated per scenario.** For each acceptance scenario from the plan (dropping to domain/application/adapter/component unit tests for any supporting logic underneath it): write one failing test, write the minimum code to pass it, commit that slice. A feature lands as a sequence of small, individually-green commits — never one commit at the end covering the whole feature. Each commit message names the single behavior it made pass.
 5. **PR when the feature is complete.** Push the branch and open a PR (`gh pr create`, or if `gh` isn't available, use the compare URL `git push` prints).
+
+## Agent skills
+
+### Issue tracker
+
+Issues are tracked in GitHub Issues (`mgrodgers/pacemaker`), via the `gh` CLI. See `docs/agents/issue-tracker.md`.
+
+### Triage labels
+
+Default label vocabulary (`needs-triage`, `needs-info`, `ready-for-agent`, `ready-for-human`, `wontfix`). See `docs/agents/triage-labels.md`.
+
+### Domain docs
+
+Single-context layout (`CONTEXT.md` + `docs/adr/` at the repo root, created lazily). See `docs/agents/domain.md`.
