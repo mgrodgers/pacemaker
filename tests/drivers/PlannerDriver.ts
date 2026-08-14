@@ -44,6 +44,14 @@ export interface TotalsView {
  * in-process driver resolves immediately.
  */
 export interface PlannerDriver {
+  /** Global, not plan-scoped: the settings page's own unit choice for
+   * entering default paces. */
+  setDefaultPaceUnits(units: UnitSystem): Promise<void>;
+  /** Global, not plan-scoped: configures one segment type's default pace,
+   * parsed in whatever units `setDefaultPaceUnits` last set (km if never
+   * called). */
+  setDefaultPace(type: SegmentType, raw: string): Promise<void>;
+
   planNames(): Promise<string[]>;
   createPlan(name: string): Promise<void>;
   renamePlan(currentName: string, newName: string): Promise<void>;

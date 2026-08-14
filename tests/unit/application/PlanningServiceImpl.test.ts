@@ -1,6 +1,7 @@
 import { beforeEach, describe, expect, test } from 'vitest';
 import { PlanningServiceImpl } from '../../../src/application/PlanningServiceImpl';
 import { InMemoryPlanRepository } from '../../../src/adapters/driven/persistence/InMemoryPlanRepository';
+import { InMemoryPaceDefaultsRepository } from '../../../src/adapters/driven/persistence/InMemoryPaceDefaultsRepository';
 import { PlanNotFoundError, SegmentNotFoundError, StepNotFoundError } from '../../../src/domain/errors/DomainError';
 import type { IdGenerator } from '../../../src/application/ports/out/IdGenerator';
 import { planId, segmentId, stepId, type PlanId, type SegmentId, type StepId } from '../../../src/domain/valueObjects/Ids';
@@ -28,7 +29,7 @@ let service: PlanningServiceImpl;
 
 beforeEach(() => {
   repository = new InMemoryPlanRepository();
-  service = new PlanningServiceImpl(repository, new FixedIdGenerator());
+  service = new PlanningServiceImpl(repository, new FixedIdGenerator(), new InMemoryPaceDefaultsRepository());
 });
 
 describe('plan lifecycle', () => {

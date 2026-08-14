@@ -14,3 +14,11 @@ describe('default pace settings: fallback before configuration', () => {
     expect((await plan.segmentSummaries())[0]).toBe('11:00 · 2km @ 5:30/km');
   });
 });
+
+describe('default pace settings: configuring a default', () => {
+  test('setting a default pace for tempo changes the pace new tempo segments start with', async () => {
+    await dsl.setDefaultPace('tempo', '5:00');
+    const plan = dsl.onPlan('Faster tempo').addSegmentUsingDefaults('tempo');
+    expect((await plan.segmentSummaries())[0]).toBe('10:00 · 2km @ 5:00/km');
+  });
+});

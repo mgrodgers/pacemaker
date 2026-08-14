@@ -37,4 +37,7 @@ export interface PlanningService {
 
   getTotals(planId: PlanId): TotalsView;
   getBestEfforts(planId: PlanId): BestEffortView[];
+
+  setPaceDefaultsUnits(units: Units): void;
+  setPaceDefault(type: SegmentType, raw: string): void;
 }

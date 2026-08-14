@@ -23,6 +23,19 @@ export class PlannerDsl {
     });
     return new PlanBuilder(this.driver, name, queue);
   }
+
+  /** Global, not plan-scoped — the default-pace settings page's own unit
+   * choice. Set this before setDefaultPace calls that should be parsed in
+   * that unit system. */
+  async setDefaultPaceUnits(units: UnitSystem): Promise<void> {
+    await this.driver.setDefaultPaceUnits(units);
+  }
+
+  /** Global, not plan-scoped — configures one segment type's default
+   * pace. */
+  async setDefaultPace(type: SegmentType, raw: string): Promise<void> {
+    await this.driver.setDefaultPace(type, raw);
+  }
 }
 
 export class PlanBuilder {

@@ -1,5 +1,6 @@
 import { PlanningServiceImpl } from '../../src/application/PlanningServiceImpl';
 import { InMemoryPlanRepository } from '../../src/adapters/driven/persistence/InMemoryPlanRepository';
+import { InMemoryPaceDefaultsRepository } from '../../src/adapters/driven/persistence/InMemoryPaceDefaultsRepository';
 import type { IdGenerator } from '../../src/application/ports/out/IdGenerator';
 import { planId, segmentId, stepId, type PlanId, type SegmentId, type StepId } from '../../src/domain/valueObjects/Ids';
 import type { SegmentType } from '../../src/domain/valueObjects/SegmentType';
@@ -28,8 +29,17 @@ class SequentialIdGenerator implements IdGenerator {
  */
 export class InProcessPlannerDriver implements PlannerDriver {
   private readonly repository = new InMemoryPlanRepository();
-  private readonly service = new PlanningServiceImpl(this.repository, new SequentialIdGenerator());
+  private readonly paceDefaultsRepository = new InMemoryPaceDefaultsRepository();
+  private readonly service = new PlanningServiceImpl(this.repository, new SequentialIdGenerator(), this.paceDefaultsRepository);
   private readonly idsByName = new Map<string, PlanId>();
+
+  async setDefaultPaceUnits(units: UnitSystem): Promise<void> {
+    this.service.setPaceDefaultsUnits(units);
+  }
+
+  async setDefaultPace(type: SegmentType, raw: string): Promise<void> {
+    this.service.setPaceDefault(type, raw);
+  }
 
   async planNames(): Promise<string[]> {
     return this.service.listPlans().map((p) => p.name);

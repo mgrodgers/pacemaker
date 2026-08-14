@@ -84,11 +84,11 @@ describe('newSegment', () => {
     expect(segment.restEnabled).toBe(true);
   });
 
-  test('interval builds one step per supplied step id, cycling preset paces', () => {
+  test('interval builds one step per supplied step id, all at the same starting pace', () => {
     const ids = [stepId('st1'), stepId('st2'), stepId('st3')];
     const segment = newSegment(segmentId('s1'), 'interval', ids);
     expect(segment.steps.map((s) => s.id)).toEqual(ids);
-    expect(segment.steps.map((s) => s.paceSecPerKm)).toEqual([300, 315, 330]);
+    expect(segment.steps.map((s) => s.paceSecPerKm)).toEqual([300, 300, 300]);
   });
 
   test('restDefault: false suppresses the interval default rest', () => {

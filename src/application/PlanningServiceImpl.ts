@@ -6,7 +6,14 @@ import type { Units } from '../domain/valueObjects/Units';
 import type { FieldMode, SegmentField } from '../domain/valueObjects/FieldMode';
 import type { SegmentType } from '../domain/valueObjects/SegmentType';
 import type { StepKind } from '../domain/valueObjects/StepKind';
-import { computeDerived, makeStep, newSegment, type DerivedFields } from '../domain/services/SegmentCalculator';
+import {
+  computeDerived,
+  makeStep,
+  newSegment,
+  nextWorkStepPace,
+  restDefaultPace,
+  type DerivedFields,
+} from '../domain/services/SegmentCalculator';
 import { Duration } from '../domain/valueObjects/Duration';
 import { Distance } from '../domain/valueObjects/Distance';
 import { Pace } from '../domain/valueObjects/Pace';
@@ -14,6 +21,7 @@ import { PlanNotFoundError, SegmentNotFoundError, StepNotFoundError } from '../d
 import type { PlanningService } from './ports/in/PlanningService';
 import type { PlanRepository } from './ports/out/PlanRepository';
 import type { IdGenerator } from './ports/out/IdGenerator';
+import type { PaceDefaultsRepository } from './ports/out/PaceDefaultsRepository';
 import { toBestEffortViews, toPlanDetail, toPlanListItem, toTotalsView } from './dto/PlanViewMapper';
 import type { BestEffortView, PlanDetail, PlanListItem, TotalsView } from './dto/PlanViews';
 
@@ -22,7 +30,8 @@ const DEFAULT_INTERVAL_STEP_COUNT = 3;
 export class PlanningServiceImpl implements PlanningService {
   constructor(
     private readonly repository: PlanRepository,
-    private readonly idGenerator: IdGenerator
+    private readonly idGenerator: IdGenerator,
+    private readonly paceDefaultsRepository: PaceDefaultsRepository
   ) {}
 
   listPlans(): PlanListItem[] {
@@ -76,7 +85,7 @@ export class PlanningServiceImpl implements PlanningService {
       type === 'interval'
         ? Array.from({ length: DEFAULT_INTERVAL_STEP_COUNT }, () => this.idGenerator.newStepId())
         : [];
-    const segment = newSegment(segmentId, type, stepIds);
+    const segment = newSegment(segmentId, type, stepIds, {}, this.paceDefaultsRepository.load());
     this.updateSegments(planId, (segments) => [...segments, segment]);
     return segmentId;
   }
@@ -160,11 +169,13 @@ export class PlanningServiceImpl implements PlanningService {
 
   addIntervalStep(planId: PlanId, segmentId: SegmentId, kind: StepKind = 'work'): StepId {
     const stepId = this.idGenerator.newStepId();
+    const paceDefaults = this.paceDefaultsRepository.load();
     this.updateSegments(planId, (segments) =>
-      this.mapSegment(segments, segmentId, (segment) => ({
-        ...segment,
-        steps: [...segment.steps, makeStep(stepId, { kind })],
-      }))
+      this.mapSegment(segments, segmentId, (segment) => {
+        const paceSecPerKm =
+          kind === 'work' ? nextWorkStepPace(segment.steps, paceDefaults) : restDefaultPace(paceDefaults);
+        return { ...segment, steps: [...segment.steps, makeStep(stepId, { kind, paceSecPerKm })] };
+      })
     );
     return stepId;
   }
@@ -206,6 +217,21 @@ export class PlanningServiceImpl implements PlanningService {
         steps: this.mapStep(segment.steps, stepId, (step) => ({ ...step, kind })),
       }))
     );
+  }
+
+  setPaceDefaultsUnits(units: Units): void {
+    const current = this.paceDefaultsRepository.load();
+    this.paceDefaultsRepository.save({ ...current, units });
+  }
+
+  setPaceDefault(type: SegmentType, raw: string): void {
+    const current = this.paceDefaultsRepository.load();
+    const parsed = Pace.parse(raw, current.units);
+    if (!parsed || !parsed.isKnown) return;
+    this.paceDefaultsRepository.save({
+      ...current,
+      paceSecPerKm: { ...current.paceSecPerKm, [type]: parsed.secPerKm },
+    });
   }
 
   getTotals(planId: PlanId): TotalsView {

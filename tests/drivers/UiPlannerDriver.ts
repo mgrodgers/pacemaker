@@ -34,6 +34,16 @@ function escapeForRegExp(value: string): string {
 export class UiPlannerDriver implements PlannerDriver {
   constructor(private readonly page: Page) {}
 
+  async setDefaultPaceUnits(units: UnitSystem): Promise<void> {
+    await this.ensureOnSettings();
+    await this.selectRadio(this.page, units);
+  }
+
+  async setDefaultPace(type: SegmentType, raw: string): Promise<void> {
+    await this.ensureOnSettings();
+    await this.page.getByLabel(`${SEGMENT_LABEL[type]} default pace`).fill(raw);
+  }
+
   async planNames(): Promise<string[]> {
     await this.ensureOnPlansList();
     return this.page.getByTestId('plan-name').allTextContents();
@@ -193,6 +203,12 @@ export class UiPlannerDriver implements PlannerDriver {
   private async commitPlanName(input: Locator, name: string): Promise<void> {
     await input.fill(name);
     await input.press('Tab');
+  }
+
+  private async ensureOnSettings(): Promise<void> {
+    const heading = this.page.getByRole('heading', { name: 'Default paces' });
+    if (await heading.isVisible().catch(() => false)) return;
+    await this.page.getByRole('button', { name: 'Default paces' }).click();
   }
 
   private async ensureOnPlansList(): Promise<void> {
