@@ -29,4 +29,11 @@ describe('default pace settings: configuring a default', () => {
     await dsl.setDefaultPace('tempo', '4:45');
     expect((await plan.segmentSummaries())[0]).toBe('10:00 · 2km @ 5:00/km');
   });
+
+  test('a default pace configured in mi converts correctly for a plan in km', async () => {
+    await dsl.setDefaultPaceUnits('mi');
+    await dsl.setDefaultPace('easy', '9:00'); // 9:00/mi
+    const plan = dsl.onPlan('Easy run in km').addSegmentUsingDefaults('easy'); // plan stays km (the default)
+    expect((await plan.segmentSummaries())[0]).toBe('16:47 · 3km @ 5:36/km');
+  });
 });
