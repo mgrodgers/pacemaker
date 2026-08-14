@@ -1,6 +1,7 @@
 import { useState, type ChangeEvent } from 'react';
 import type { FieldMode, SegmentField } from '../../../../domain/valueObjects/FieldMode';
 import type { FieldView } from '../../../../application/dto/PlanViews';
+import { formatDurationKeystrokes } from './formatDurationKeystrokes';
 
 interface FieldTriadProps {
   name: string;
@@ -35,16 +36,20 @@ export function FieldTriad({
 }: FieldTriadProps) {
   const [drafts, setDrafts] = useState<Partial<Record<SegmentField, string>>>({});
 
-  const bind = (field: SegmentField, view: FieldView) => ({
-    value: drafts[field] ?? view.value,
-    readOnly: !view.editable,
-    style: { opacity: view.editable ? 1 : 0.5 },
-    onChange: (e: ChangeEvent<HTMLInputElement>) => {
-      setDrafts((d) => ({ ...d, [field]: e.target.value }));
-      onFieldChange(field, e.target.value);
-    },
-    onBlur: () => setDrafts((d) => ({ ...d, [field]: undefined })),
-  });
+  const bind = (field: SegmentField, view: FieldView, isDuration = false) => {
+    const current = drafts[field] ?? view.value;
+    return {
+      value: current,
+      readOnly: !view.editable,
+      style: { opacity: view.editable ? 1 : 0.5 },
+      onChange: (e: ChangeEvent<HTMLInputElement>) => {
+        const next = isDuration ? formatDurationKeystrokes(current, e.target.value) : e.target.value;
+        setDrafts((d) => ({ ...d, [field]: next }));
+        onFieldChange(field, next);
+      },
+      onBlur: () => setDrafts((d) => ({ ...d, [field]: undefined })),
+    };
+  };
 
   return (
     <>
@@ -65,15 +70,15 @@ export function FieldTriad({
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 'var(--space-3)' }}>
         <div className="field">
           <label htmlFor={`${name}-time`}>{timeLabel}</label>
-          <input id={`${name}-time`} className="input" {...bind('time', time)} />
+          <input id={`${name}-time`} className="input" inputMode="numeric" {...bind('time', time, true)} />
         </div>
         <div className="field">
           <label htmlFor={`${name}-distance`}>{distanceLabel ?? `Distance (${unitLabel})`}</label>
-          <input id={`${name}-distance`} className="input" {...bind('distance', distance)} />
+          <input id={`${name}-distance`} className="input" inputMode="decimal" {...bind('distance', distance)} />
         </div>
         <div className="field">
           <label htmlFor={`${name}-pace`}>{paceLabel ?? `Pace (/${unitLabel})`}</label>
-          <input id={`${name}-pace`} className="input" {...bind('pace', pace)} />
+          <input id={`${name}-pace`} className="input" inputMode="numeric" {...bind('pace', pace, true)} />
         </div>
       </div>
     </>
