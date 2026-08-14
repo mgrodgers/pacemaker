@@ -20,6 +20,23 @@ describe('FieldTriad', () => {
     expect(screen.getByLabelText('Distance (km)')).toHaveAttribute('inputmode', 'decimal');
   });
 
+  test('the time and pace fields open a numeric keypad on mobile', () => {
+    render(
+      <FieldTriad
+        name="seg1"
+        unitLabel="km"
+        mode="distance-pace"
+        time={{ value: '10:00', editable: false }}
+        distance={{ value: '2', editable: true }}
+        pace={{ value: '5:00', editable: true }}
+        onModeChange={() => {}}
+        onFieldChange={() => {}}
+      />
+    );
+    expect(screen.getByLabelText('Time (mm:ss)')).toHaveAttribute('inputmode', 'numeric');
+    expect(screen.getByLabelText('Pace (/km)')).toHaveAttribute('inputmode', 'numeric');
+  });
+
   test('the derived field is read-only; the other two are editable', () => {
     render(
       <FieldTriad
