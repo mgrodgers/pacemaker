@@ -64,3 +64,16 @@ export interface BestEffortView {
   readonly time: string;
   readonly pace: string;
 }
+
+/** One segment type's default-pace settings row. `value` is the formatted
+ * pace, or '' when that type has no configured default yet. */
+export interface PaceDefaultEntryView {
+  readonly type: SegmentType;
+  readonly typeLabel: string;
+  readonly value: string;
+}
+
+export interface PaceDefaultsView {
+  readonly units: Units;
+  readonly entries: readonly PaceDefaultEntryView[];
+}

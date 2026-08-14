@@ -64,6 +64,15 @@ export function ChevronDownIcon({ size = 12 }: IconProps) {
   );
 }
 
+export function SettingsIcon({ size = 15 }: IconProps) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 256 256" fill="none" stroke="currentColor" strokeWidth={16} strokeLinecap="round" strokeLinejoin="round">
+      <circle cx="128" cy="128" r="36" />
+      <path d="M128,20 L128,52 M128,204 L128,236 M20,128 L52,128 M204,128 L236,128 M52,52 L74,74 M182,182 L204,204 M204,52 L182,74 M74,182 L52,204" />
+    </svg>
+  );
+}
+
 export function CloseIcon({ size = 12 }: IconProps) {
   return (
     <svg width={size} height={size} viewBox="0 0 256 256" fill="none" stroke="currentColor" strokeWidth={24} strokeLinecap="round">

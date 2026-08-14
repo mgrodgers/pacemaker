@@ -3,7 +3,7 @@ import type { Units } from '../../../domain/valueObjects/Units';
 import type { FieldMode, SegmentField } from '../../../domain/valueObjects/FieldMode';
 import type { SegmentType } from '../../../domain/valueObjects/SegmentType';
 import type { StepKind } from '../../../domain/valueObjects/StepKind';
-import type { BestEffortView, PlanDetail, PlanListItem, TotalsView } from '../../dto/PlanViews';
+import type { BestEffortView, PaceDefaultsView, PlanDetail, PlanListItem, TotalsView } from '../../dto/PlanViews';
 
 /** Primary (driving) port: the one interface every driving adapter — the
  * React UI, the in-process test driver, and any future HTTP API — calls to
@@ -38,6 +38,7 @@ export interface PlanningService {
   getTotals(planId: PlanId): TotalsView;
   getBestEfforts(planId: PlanId): BestEffortView[];
 
+  getPaceDefaults(): PaceDefaultsView;
   setPaceDefaultsUnits(units: Units): void;
   setPaceDefault(type: SegmentType, raw: string): void;
 }

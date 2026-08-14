@@ -22,8 +22,8 @@ import type { PlanningService } from './ports/in/PlanningService';
 import type { PlanRepository } from './ports/out/PlanRepository';
 import type { IdGenerator } from './ports/out/IdGenerator';
 import type { PaceDefaultsRepository } from './ports/out/PaceDefaultsRepository';
-import { toBestEffortViews, toPlanDetail, toPlanListItem, toTotalsView } from './dto/PlanViewMapper';
-import type { BestEffortView, PlanDetail, PlanListItem, TotalsView } from './dto/PlanViews';
+import { toBestEffortViews, toPaceDefaultsView, toPlanDetail, toPlanListItem, toTotalsView } from './dto/PlanViewMapper';
+import type { BestEffortView, PaceDefaultsView, PlanDetail, PlanListItem, TotalsView } from './dto/PlanViews';
 
 const DEFAULT_INTERVAL_STEP_COUNT = 3;
 
@@ -217,6 +217,10 @@ export class PlanningServiceImpl implements PlanningService {
         steps: this.mapStep(segment.steps, stepId, (step) => ({ ...step, kind })),
       }))
     );
+  }
+
+  getPaceDefaults(): PaceDefaultsView {
+    return toPaceDefaultsView(this.paceDefaultsRepository.load());
   }
 
   setPaceDefaultsUnits(units: Units): void {
