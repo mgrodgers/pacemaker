@@ -72,3 +72,18 @@ describe('default pace settings: unified rest handling', () => {
     expect((await plan.totals()).distance).toBe('5.25 km');
   });
 });
+
+describe('default pace settings: interval work-step seeding', () => {
+  test('the first work step of a newly created interval uses the configured interval default pace', async () => {
+    await dsl.setDefaultPace('interval', '4:00');
+    const plan = dsl.onPlan('Interval first step').addSegmentUsingDefaults('interval');
+    expect((await plan.segmentSummaries())[0]).toContain('0.4km@4:00');
+  });
+
+  test('every work step seeded when an interval is first created matches the pace of the step before it', async () => {
+    await dsl.setDefaultPace('interval', '4:00');
+    const plan = dsl.onPlan('Interval flat seeding').addSegmentUsingDefaults('interval');
+    // 3 starter steps, all at the same flat pace — no varying ladder.
+    expect((await plan.segmentSummaries())[0]).toBe('4 × (0.4km@4:00, 0.4km@4:00, 0.4km@4:00) · rest 1:30');
+  });
+});
