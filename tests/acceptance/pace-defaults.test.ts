@@ -86,4 +86,33 @@ describe('default pace settings: interval work-step seeding', () => {
     // 3 starter steps, all at the same flat pace — no varying ladder.
     expect((await plan.segmentSummaries())[0]).toBe('4 × (0.4km@4:00, 0.4km@4:00, 0.4km@4:00) · rest 1:30');
   });
+
+  test('adding a work step via "+ Add step" takes the pace of the interval\'s last existing work step', async () => {
+    await dsl.setDefaultPace('interval', '4:00'); // deliberately different — should NOT be picked up
+    const plan = dsl
+      .onPlan('Add step inherits last')
+      .addInterval({
+        steps: [
+          { mode: 'distance-pace', distance: '0.4', pace: '5:00' },
+          { mode: 'distance-pace', distance: '0.4', pace: '6:00' }, // "last" step
+        ],
+        reps: 1,
+        rest: null,
+      })
+      .addStepToInterval(0, 'work');
+    expect((await plan.segmentSummaries())[0]).toBe('0.4km@5:00, 0.4km@6:00, 0.4km@6:00');
+  });
+
+  test('adding a work step via "+ Add step" to an interval whose only existing step is a rest step falls back to the interval default', async () => {
+    await dsl.setDefaultPace('interval', '4:00');
+    const plan = dsl
+      .onPlan('Add step after rest only')
+      .addInterval({
+        steps: [{ kind: 'rest', mode: 'time-pace', time: '1:00', pace: '7:00' }],
+        reps: 1,
+        rest: null,
+      })
+      .addStepToInterval(0, 'work');
+    expect((await plan.segmentSummaries())[0]).toBe('rest 1:00, 0.4km@4:00');
+  });
 });
