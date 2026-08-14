@@ -69,7 +69,7 @@ export function FieldTriad({
         </div>
         <div className="field">
           <label htmlFor={`${name}-distance`}>{distanceLabel ?? `Distance (${unitLabel})`}</label>
-          <input id={`${name}-distance`} className="input" {...bind('distance', distance)} />
+          <input id={`${name}-distance`} className="input" inputMode="decimal" {...bind('distance', distance)} />
         </div>
         <div className="field">
           <label htmlFor={`${name}-pace`}>{paceLabel ?? `Pace (/${unitLabel})`}</label>

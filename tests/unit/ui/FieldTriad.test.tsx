@@ -4,6 +4,22 @@ import userEvent from '@testing-library/user-event';
 import { FieldTriad } from '../../../src/adapters/driving/ui/components/FieldTriad';
 
 describe('FieldTriad', () => {
+  test('the distance field opens a decimal keypad on mobile', () => {
+    render(
+      <FieldTriad
+        name="seg1"
+        unitLabel="km"
+        mode="distance-pace"
+        time={{ value: '10:00', editable: false }}
+        distance={{ value: '2', editable: true }}
+        pace={{ value: '5:00', editable: true }}
+        onModeChange={() => {}}
+        onFieldChange={() => {}}
+      />
+    );
+    expect(screen.getByLabelText('Distance (km)')).toHaveAttribute('inputmode', 'decimal');
+  });
+
   test('the derived field is read-only; the other two are editable', () => {
     render(
       <FieldTriad
