@@ -12,13 +12,13 @@ export interface GradeSegment {
 }
 
 function elevationAt(points: readonly TrackPoint[], distanceM: number): number {
-  const first = points[0];
-  const last = points[points.length - 1];
+  const first = points[0]!;
+  const last = points[points.length - 1]!;
   if (distanceM <= first.distanceM) return first.elevationM;
   if (distanceM >= last.distanceM) return last.elevationM;
   for (let i = 0; i < points.length - 1; i++) {
-    const a = points[i];
-    const b = points[i + 1];
+    const a = points[i]!;
+    const b = points[i + 1]!;
     if (distanceM >= a.distanceM && distanceM <= b.distanceM) {
       if (b.distanceM === a.distanceM) return a.elevationM;
       const t = (distanceM - a.distanceM) / (b.distanceM - a.distanceM);
@@ -47,7 +47,7 @@ function boundaryElevation(points: readonly TrackPoint[], boundaryM: number, hal
 export function resample(points: readonly TrackPoint[], bucketSizeM: number): GradeSegment[] {
   if (points.length < 2) return [];
   const sorted = [...points].sort((a, b) => a.distanceM - b.distanceM);
-  const maxDistM = sorted[sorted.length - 1].distanceM;
+  const maxDistM = sorted[sorted.length - 1]!.distanceM;
   const numBuckets = Math.floor(maxDistM / bucketSizeM);
   const halfWindowM = bucketSizeM / 2;
 
@@ -57,9 +57,9 @@ export function resample(points: readonly TrackPoint[], bucketSizeM: number): Gr
 
   const segments: GradeSegment[] = [];
   for (let i = 0; i < numBuckets; i++) {
-    const startM = boundaries[i];
-    const endM = boundaries[i + 1];
-    const grade = Grade.fromRiseAndRun(elevations[i + 1] - elevations[i], endM - startM);
+    const startM = boundaries[i]!;
+    const endM = boundaries[i + 1]!;
+    const grade = Grade.fromRiseAndRun(elevations[i + 1]! - elevations[i]!, endM - startM);
     segments.push({ startM, endM, grade });
   }
   return segments;

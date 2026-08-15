@@ -57,8 +57,9 @@ export function parseGpx(xmlText: string): TrackPoint[] {
   let lastElevation = firstKnownElevation;
   const points: TrackPoint[] = [];
   for (let i = 0; i < raw.length; i++) {
-    if (i > 0) cumulativeM += haversineMeters(raw[i - 1], raw[i]);
-    const elevationM = Number.isNaN(raw[i].elevationM) ? lastElevation : raw[i].elevationM;
+    const point = raw[i]!;
+    if (i > 0) cumulativeM += haversineMeters(raw[i - 1]!, point);
+    const elevationM = Number.isNaN(point.elevationM) ? lastElevation : point.elevationM;
     lastElevation = elevationM;
     points.push({ distanceM: cumulativeM, elevationM });
   }
