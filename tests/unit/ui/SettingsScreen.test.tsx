@@ -5,6 +5,7 @@ import { SettingsScreen } from '../../../src/adapters/driving/ui/components/Sett
 
 beforeEach(() => {
   window.localStorage.clear();
+  document.documentElement.removeAttribute('data-theme');
 });
 
 describe('SettingsScreen', () => {
@@ -14,6 +15,28 @@ describe('SettingsScreen', () => {
     expect(within(group).getByLabelText('System')).toBeInTheDocument();
     expect(within(group).getByLabelText('Light')).toBeInTheDocument();
     expect(within(group).getByLabelText('Dark')).toBeInTheDocument();
+  });
+
+  test('choosing Light applies data-theme and persists across remount', async () => {
+    const user = userEvent.setup();
+    const { unmount } = render(<SettingsScreen onBack={() => {}} />);
+    await user.click(screen.getByLabelText('Light'));
+    expect(document.documentElement.getAttribute('data-theme')).toBe('light');
+    unmount();
+
+    render(<SettingsScreen onBack={() => {}} />);
+    expect(screen.getByLabelText('Light')).toBeChecked();
+    expect(document.documentElement.getAttribute('data-theme')).toBe('light');
+  });
+
+  test('choosing System removes the data-theme attribute', async () => {
+    const user = userEvent.setup();
+    render(<SettingsScreen onBack={() => {}} />);
+    await user.click(screen.getByLabelText('Dark'));
+    expect(document.documentElement.getAttribute('data-theme')).toBe('dark');
+
+    await user.click(screen.getByLabelText('System'));
+    expect(document.documentElement.hasAttribute('data-theme')).toBe(false);
   });
 
   test('renders one row per segment type, each with an editable pace field', () => {
