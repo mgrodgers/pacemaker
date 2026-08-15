@@ -1,7 +1,11 @@
-import { describe, expect, test } from 'vitest';
+import { afterEach, describe, expect, test, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { FeedbackModal } from '../../../src/adapters/driving/ui/components/FeedbackModal';
+
+afterEach(() => {
+  vi.unstubAllGlobals();
+});
 
 describe('FeedbackModal', () => {
   test('renders a description field, category select, and submit button', () => {
@@ -23,5 +27,24 @@ describe('FeedbackModal', () => {
     await user.clear(screen.getByTestId('feedback-description'));
     await user.type(screen.getByTestId('feedback-description'), '   ');
     expect(screen.getByTestId('feedback-submit')).toBeDisabled();
+  });
+
+  test('submitting valid input posts to /api/feedback and shows a success confirmation', async () => {
+    const fetchMock = vi.fn().mockResolvedValue({ ok: true, status: 201 });
+    vi.stubGlobal('fetch', fetchMock);
+    const user = userEvent.setup();
+    render(<FeedbackModal onClose={() => {}} />);
+
+    await user.type(screen.getByTestId('feedback-description'), 'it broke');
+    await user.click(screen.getByTestId('feedback-submit'));
+
+    await screen.findByTestId('feedback-success');
+    expect(fetchMock).toHaveBeenCalledWith(
+      '/api/feedback',
+      expect.objectContaining({
+        method: 'POST',
+        body: JSON.stringify({ category: 'bug', description: 'it broke', honeypot: '' }),
+      })
+    );
   });
 });

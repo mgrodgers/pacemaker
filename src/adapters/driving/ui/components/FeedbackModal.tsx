@@ -13,7 +13,7 @@ const CATEGORY_LABELS: Record<FeedbackCategory, string> = {
 };
 
 export function FeedbackModal({ onClose }: FeedbackModalProps) {
-  const { category, setCategory, description, setDescription, submit } = useFeedbackController();
+  const { category, setCategory, description, setDescription, status, submit } = useFeedbackController();
 
   return (
     <div className="overlay" role="presentation" onClick={onClose}>
@@ -65,11 +65,17 @@ export function FeedbackModal({ onClose }: FeedbackModalProps) {
           type="button"
           className="btn btn-primary btn-block"
           data-testid="feedback-submit"
-          disabled={description.trim() === ''}
+          disabled={description.trim() === '' || status === 'submitting'}
           onClick={submit}
         >
           Send feedback
         </button>
+
+        {status === 'success' && (
+          <p data-testid="feedback-success" role="status">
+            Thanks — your feedback was sent.
+          </p>
+        )}
       </div>
     </div>
   );
