@@ -62,4 +62,28 @@ describe('handleFeedbackSubmission', () => {
     expect(result).toEqual({ kind: 'rate-limited' });
     expect(githubClient.calls).toEqual([]);
   });
+
+  test('rejects a blank description as invalid without calling GitHub', async () => {
+    const githubClient = new FakeGithubIssueClient();
+
+    const result = await handleFeedbackSubmission(
+      { category: 'bug', description: '   ', honeypot: '', clientIp: '1.2.3.4' },
+      { githubClient, rateLimiter: allowAllRateLimiter }
+    );
+
+    expect(result).toEqual({ kind: 'invalid', reason: 'Description is required.' });
+    expect(githubClient.calls).toEqual([]);
+  });
+
+  test('rejects an unknown category as invalid without calling GitHub', async () => {
+    const githubClient = new FakeGithubIssueClient();
+
+    const result = await handleFeedbackSubmission(
+      { category: 'nonsense', description: 'it broke', honeypot: '', clientIp: '1.2.3.4' },
+      { githubClient, rateLimiter: allowAllRateLimiter }
+    );
+
+    expect(result).toEqual({ kind: 'invalid', reason: 'Unknown category.' });
+    expect(githubClient.calls).toEqual([]);
+  });
 });
