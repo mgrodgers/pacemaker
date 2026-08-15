@@ -68,6 +68,27 @@ test('renaming, duplicating, and deleting a plan works end to end', async ({ pag
   await copy.delete();
 });
 
+test('uploading a GPX and entering a target pace predicts a course time through the real UI', async ({ page }) => {
+  const gpx = `<?xml version="1.0"?>
+<gpx><trk><trkseg>
+  <trkpt lat="51.5007" lon="-0.1246"><ele>10</ele></trkpt>
+  <trkpt lat="51.5107" lon="-0.1246"><ele>60</ele></trkpt>
+  <trkpt lat="51.5207" lon="-0.1246"><ele>10</ele></trkpt>
+</trkseg></trk></gpx>`;
+
+  await page.getByRole('button', { name: 'Course Predictor' }).click();
+  await page.getByTestId('gpx-file-input').setInputFiles({
+    name: 'course.gpx',
+    mimeType: 'application/gpx+xml',
+    buffer: Buffer.from(gpx),
+  });
+  await page.getByLabel('Target pace').fill('5:00');
+  await page.getByRole('button', { name: 'Predict' }).click();
+
+  await expect(page.getByTestId('course-total-time')).toBeVisible();
+  await expect(page.getByTestId('course-splits-table')).toBeVisible();
+});
+
 test.describe('mobile layout does not overflow horizontally', () => {
   test('a long interval segment and the add-segment row stay within narrow viewports', async ({ page }) => {
     const dsl = new PlannerDsl(new UiPlannerDriver(page));
