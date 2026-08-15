@@ -1,12 +1,15 @@
 import { PlanningServiceImpl } from '../application/PlanningServiceImpl';
 import { FeedbackServiceImpl } from '../application/FeedbackServiceImpl';
+import { CoursePredictionServiceImpl } from '../application/CoursePredictionServiceImpl';
 import { seedExamplePlanIfEmpty } from '../application/ExamplePlanSeeder';
 import { LocalStoragePlanRepository } from '../adapters/driven/persistence/LocalStoragePlanRepository';
 import { LocalStoragePaceDefaultsRepository } from '../adapters/driven/persistence/LocalStoragePaceDefaultsRepository';
 import { RandomIdGenerator } from '../adapters/driven/persistence/IdGenerator';
 import { HttpFeedbackSubmitter } from '../adapters/driven/feedback/HttpFeedbackSubmitter';
+import { GpxCourseParserAdapter } from '../adapters/driven/gpx/GpxCourseParserAdapter';
 import type { PlanningService } from '../application/ports/in/PlanningService';
 import type { FeedbackService } from '../application/ports/in/FeedbackService';
+import type { CoursePredictionService } from '../application/ports/in/CoursePredictionService';
 
 /** The only place concrete adapters are wired to the application. Adding a
  * backend later means adding a new PlanRepository implementation here —
@@ -31,4 +34,13 @@ export function getFeedbackService(): FeedbackService {
     feedbackService = new FeedbackServiceImpl(new HttpFeedbackSubmitter());
   }
   return feedbackService;
+}
+
+let coursePredictionService: CoursePredictionService | null = null;
+
+export function getCoursePredictionService(): CoursePredictionService {
+  if (!coursePredictionService) {
+    coursePredictionService = new CoursePredictionServiceImpl(new GpxCourseParserAdapter());
+  }
+  return coursePredictionService;
 }
