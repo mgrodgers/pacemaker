@@ -68,6 +68,38 @@ test('renaming, duplicating, and deleting a plan works end to end', async ({ pag
   await copy.delete();
 });
 
+test.describe('mobile layout does not overflow horizontally', () => {
+  test('a long interval segment and the add-segment row stay within narrow viewports', async ({ page }) => {
+    const dsl = new PlannerDsl(new UiPlannerDriver(page));
+    const plan = dsl.onPlan('E2E Narrow Viewport').addInterval({
+      steps: [
+        { mode: 'distance-pace', distance: '0.4', pace: '5:30' },
+        { mode: 'distance-pace', distance: '0.4', pace: '5:15' },
+        { mode: 'distance-pace', distance: '0.4', pace: '5:00' },
+        { kind: 'rest', mode: 'time-distance', time: '1:00', distance: '0' },
+      ],
+      reps: 2,
+      rest: null,
+    });
+    await plan.totals();
+
+    for (const width of [320, 375, 414]) {
+      await page.setViewportSize({ width, height: 812 });
+      const overflow = await page.evaluate(
+        () => document.documentElement.scrollWidth - document.documentElement.clientWidth
+      );
+      expect(overflow, `horizontal overflow at ${width}px width (collapsed)`).toBeLessThanOrEqual(0);
+
+      await page.getByTestId('segment-card').first().click();
+      const overflowExpanded = await page.evaluate(
+        () => document.documentElement.scrollWidth - document.documentElement.clientWidth
+      );
+      expect(overflowExpanded, `horizontal overflow at ${width}px width (expanded)`).toBeLessThanOrEqual(0);
+      await page.getByTestId('segment-card').first().click();
+    }
+  });
+});
+
 test.describe('mobile drag-reorder', () => {
   test.use({ viewport: { width: 390, height: 844 }, hasTouch: true, isMobile: true });
 
