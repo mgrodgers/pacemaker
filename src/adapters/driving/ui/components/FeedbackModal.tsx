@@ -13,7 +13,8 @@ const CATEGORY_LABELS: Record<FeedbackCategory, string> = {
 };
 
 export function FeedbackModal({ onClose }: FeedbackModalProps) {
-  const { category, setCategory, description, setDescription, status, submit } = useFeedbackController();
+  const { category, setCategory, description, setDescription, honeypot, setHoneypot, status, submit } =
+    useFeedbackController();
 
   return (
     <div className="overlay" role="presentation" onClick={onClose}>
@@ -60,6 +61,18 @@ export function FeedbackModal({ onClose }: FeedbackModalProps) {
             onChange={(e) => setDescription(e.target.value)}
           />
         </div>
+
+        <input
+          type="text"
+          name="company"
+          data-testid="feedback-honeypot"
+          value={honeypot}
+          onChange={(e) => setHoneypot(e.target.value)}
+          tabIndex={-1}
+          autoComplete="off"
+          aria-hidden="true"
+          style={{ position: 'absolute', left: -9999, width: 1, height: 1, opacity: 0 }}
+        />
 
         <button
           type="button"

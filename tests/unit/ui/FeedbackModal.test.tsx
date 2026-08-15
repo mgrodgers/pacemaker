@@ -72,4 +72,12 @@ describe('FeedbackModal', () => {
     expect(error).toHaveTextContent(/something went wrong/i);
     expect(screen.getByTestId('feedback-description')).toHaveValue('it broke');
   });
+
+  test('includes a visually-hidden honeypot field out of tab order', () => {
+    render(<FeedbackModal onClose={() => {}} />);
+    const honeypot = screen.getByTestId('feedback-honeypot');
+    expect(honeypot).toHaveAttribute('tabIndex', '-1');
+    expect(honeypot).toHaveAttribute('aria-hidden', 'true');
+    expect(honeypot).toHaveValue('');
+  });
 });
