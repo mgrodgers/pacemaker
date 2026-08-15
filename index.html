@@ -1,6 +1,22 @@
 <!doctype html>
 <html lang="en">
   <head>
+    <!-- Runs before any stylesheet paints, to avoid a flash of the wrong
+         theme. Key must stay in sync with STORAGE_KEY in
+         src/adapters/driven/persistence/themePreferenceStorage.ts — this
+         inline script can't import that constant. -->
+    <script>
+      (function () {
+        try {
+          var preference = localStorage.getItem('runPlanner.themePreference');
+          if (preference === 'light' || preference === 'dark') {
+            document.documentElement.setAttribute('data-theme', preference);
+          }
+        } catch (e) {
+          /* storage unavailable — fall back to the default dark theme */
+        }
+      })();
+    </script>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <meta name="theme-color" content="#161826" />
