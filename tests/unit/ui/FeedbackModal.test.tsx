@@ -47,4 +47,16 @@ describe('FeedbackModal', () => {
       })
     );
   });
+
+  test('shows a rate-limit-specific message on a 429 response', async () => {
+    vi.stubGlobal('fetch', vi.fn().mockResolvedValue({ ok: false, status: 429 }));
+    const user = userEvent.setup();
+    render(<FeedbackModal onClose={() => {}} />);
+
+    await user.type(screen.getByTestId('feedback-description'), 'it broke');
+    await user.click(screen.getByTestId('feedback-submit'));
+
+    const error = await screen.findByTestId('feedback-error');
+    expect(error).toHaveTextContent(/too many/i);
+  });
 });

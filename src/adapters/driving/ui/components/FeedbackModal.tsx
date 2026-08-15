@@ -76,6 +76,12 @@ export function FeedbackModal({ onClose }: FeedbackModalProps) {
             Thanks — your feedback was sent.
           </p>
         )}
+
+        {status === 'rate-limited' && (
+          <p data-testid="feedback-error" role="alert">
+            Too many submissions — please try again in a few minutes.
+          </p>
+        )}
       </div>
     </div>
   );
