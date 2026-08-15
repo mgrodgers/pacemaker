@@ -23,4 +23,12 @@ describe('submitFeedback', () => {
     ).rejects.toThrow(FeedbackValidationError);
     expect(submitter.submissions).toEqual([]);
   });
+
+  test('pin: submitter errors propagate through submitFeedback uncaught', async () => {
+    const boom = new Error('network down');
+    submitter.failWith = boom;
+    await expect(
+      service.submitFeedback({ category: 'other', description: 'x', honeypot: '' })
+    ).rejects.toThrow(boom);
+  });
 });
