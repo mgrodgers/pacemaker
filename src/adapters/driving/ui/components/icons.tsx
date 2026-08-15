@@ -68,7 +68,7 @@ export function SettingsIcon({ size = 15 }: IconProps) {
   return (
     <svg width={size} height={size} viewBox="0 0 256 256" fill="none" stroke="currentColor" strokeWidth={16} strokeLinecap="round" strokeLinejoin="round">
       <circle cx="128" cy="128" r="36" />
-      <path d="M128,20 L128,52 M128,204 L128,236 M20,128 L52,128 M204,128 L236,128 M52,52 L74,74 M182,182 L204,204 M204,52 L182,74 M74,182 L52,204" />
+      <path d="M144,26 L152,54 A96,96 0 0 1 172,64 L198,50 L214,66 L200,92 A96,96 0 0 1 210,112 L238,120 L238,144 L210,152 A96,96 0 0 1 200,172 L214,198 L198,214 L172,200 A96,96 0 0 1 152,210 L144,238 L120,238 L112,210 A96,96 0 0 1 92,200 L66,214 L50,198 L64,172 A96,96 0 0 1 54,152 L26,144 L26,120 L54,112 A96,96 0 0 1 64,92 L50,66 L66,50 L92,64 A96,96 0 0 1 112,54 L120,26 Z" />
     </svg>
   );
 }
