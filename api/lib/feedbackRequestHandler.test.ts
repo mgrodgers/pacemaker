@@ -49,4 +49,17 @@ describe('handleFeedbackSubmission', () => {
     expect(result).toEqual({ kind: 'dropped-silently' });
     expect(githubClient.calls).toEqual([]);
   });
+
+  test('scenario: rate-limited feedback is rejected without calling GitHub', async () => {
+    const githubClient = new FakeGithubIssueClient();
+    const denyAllRateLimiter: RateLimiter = { tryConsume: () => false };
+
+    const result = await handleFeedbackSubmission(
+      { category: 'bug', description: 'it broke', honeypot: '', clientIp: '1.2.3.4' },
+      { githubClient, rateLimiter: denyAllRateLimiter }
+    );
+
+    expect(result).toEqual({ kind: 'rate-limited' });
+    expect(githubClient.calls).toEqual([]);
+  });
 });
