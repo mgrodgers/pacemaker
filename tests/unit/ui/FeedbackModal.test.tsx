@@ -59,4 +59,17 @@ describe('FeedbackModal', () => {
     const error = await screen.findByTestId('feedback-error');
     expect(error).toHaveTextContent(/too many/i);
   });
+
+  test('shows a generic error and preserves the draft on other failures', async () => {
+    vi.stubGlobal('fetch', vi.fn().mockResolvedValue({ ok: false, status: 500 }));
+    const user = userEvent.setup();
+    render(<FeedbackModal onClose={() => {}} />);
+
+    await user.type(screen.getByTestId('feedback-description'), 'it broke');
+    await user.click(screen.getByTestId('feedback-submit'));
+
+    const error = await screen.findByTestId('feedback-error');
+    expect(error).toHaveTextContent(/something went wrong/i);
+    expect(screen.getByTestId('feedback-description')).toHaveValue('it broke');
+  });
 });

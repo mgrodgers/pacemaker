@@ -82,6 +82,12 @@ export function FeedbackModal({ onClose }: FeedbackModalProps) {
             Too many submissions — please try again in a few minutes.
           </p>
         )}
+
+        {status === 'error' && (
+          <p data-testid="feedback-error" role="alert">
+            Something went wrong — please try again.
+          </p>
+        )}
       </div>
     </div>
   );
