@@ -112,7 +112,7 @@ export function SegmentCard({ segment, unitLabel, expanded, onToggleExpand, comm
               >
                 Steps (one rep runs through all of these)
               </div>
-              <div style={{ display: 'grid', gap: 'var(--space-2)' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr)', gap: 'var(--space-2)' }}>
                 {(() => {
                   let workIndex = 0;
                   return segment.steps.map((step) => {

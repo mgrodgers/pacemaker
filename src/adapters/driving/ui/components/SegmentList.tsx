@@ -42,7 +42,7 @@ export function SegmentList({ segments, unitLabel, expandedId, onToggleExpand, c
   return (
     <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
       <SortableContext items={segments.map((s) => s.id)} strategy={verticalListSortingStrategy}>
-        <div style={{ display: 'grid', gap: 'var(--space-3)' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr)', gap: 'var(--space-3)' }}>
           {segments.map((segment) => (
             <SegmentCard
               key={segment.id}

@@ -35,7 +35,7 @@ export function PlansScreen({ onOpenPlan, onOpenSettings }: PlansScreenProps) {
         <div style={{ fontSize: 11, letterSpacing: '0.1em', textTransform: 'uppercase', opacity: 0.55, marginBottom: 'var(--space-3)' }}>
           Your plans
         </div>
-        <div style={{ display: 'grid', gap: 'var(--space-3)' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr)', gap: 'var(--space-3)' }}>
           {plans.map((plan) => (
             <div
               key={plan.id}
