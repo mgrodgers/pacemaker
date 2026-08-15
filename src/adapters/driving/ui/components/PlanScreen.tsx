@@ -92,7 +92,7 @@ export function PlanScreen({ planId, onBack, onOpenSettings }: PlanScreenProps) 
         </div>
 
         {subview === 'builder' && (
-          <div style={{ display: 'grid', gap: 'var(--space-3)' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr)', gap: 'var(--space-3)' }}>
             <SegmentList
               segments={plan.segments}
               unitLabel={plan.units}
