@@ -81,6 +81,16 @@ export function FeedbackIcon({ size = 15 }: IconProps) {
   );
 }
 
+export function RouteIcon({ size = 15 }: IconProps) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 256 256" fill="none" stroke="currentColor" strokeWidth={16} strokeLinecap="round" strokeLinejoin="round">
+      <circle cx="60" cy="200" r="24" />
+      <circle cx="196" cy="56" r="24" />
+      <path d="M60,176 L60,120 C60,90 90,90 120,90 L150,90 C180,90 196,90 196,80" />
+    </svg>
+  );
+}
+
 export function CloseIcon({ size = 12 }: IconProps) {
   return (
     <svg width={size} height={size} viewBox="0 0 256 256" fill="none" stroke="currentColor" strokeWidth={24} strokeLinecap="round">

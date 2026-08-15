@@ -1,14 +1,15 @@
 import { useState } from 'react';
 import { usePlansController } from '../hooks/usePlansController';
 import type { PlanId } from '../../../../domain/valueObjects/Ids';
-import { PlusIcon, RenameIcon, DuplicateIcon, DeleteIcon, SettingsIcon } from './icons';
+import { PlusIcon, RenameIcon, DuplicateIcon, DeleteIcon, SettingsIcon, RouteIcon } from './icons';
 
 interface PlansScreenProps {
   onOpenPlan: (id: PlanId) => void;
   onOpenSettings: () => void;
+  onOpenCoursePredictor: () => void;
 }
 
-export function PlansScreen({ onOpenPlan, onOpenSettings }: PlansScreenProps) {
+export function PlansScreen({ onOpenPlan, onOpenSettings, onOpenCoursePredictor }: PlansScreenProps) {
   const { plans, createPlan, renamePlan, duplicatePlan, deletePlan } = usePlansController();
   const [renamingId, setRenamingId] = useState<PlanId | null>(null);
   const [renameValue, setRenameValue] = useState('');
@@ -20,10 +21,13 @@ export function PlansScreen({ onOpenPlan, onOpenSettings }: PlansScreenProps) {
         <button
           type="button"
           className="btn btn-ghost btn-icon"
-          aria-label="Default paces"
+          aria-label="Course Predictor"
           style={{ marginLeft: 'auto' }}
-          onClick={onOpenSettings}
+          onClick={onOpenCoursePredictor}
         >
+          <RouteIcon />
+        </button>
+        <button type="button" className="btn btn-ghost btn-icon" aria-label="Default paces" onClick={onOpenSettings}>
           <SettingsIcon />
         </button>
         <button type="button" className="btn btn-primary btn-icon" aria-label="New plan" onClick={() => onOpenPlan(createPlan())}>
