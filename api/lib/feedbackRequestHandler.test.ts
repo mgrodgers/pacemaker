@@ -1,7 +1,7 @@
 import { describe, expect, test } from 'vitest';
-import { handleFeedbackSubmission } from './feedbackRequestHandler';
-import type { CreateIssueInput, GithubIssueClient } from './githubIssueClient';
-import type { RateLimiter } from './feedbackAbuseGuard';
+import { handleFeedbackSubmission } from './feedbackRequestHandler.js';
+import type { CreateIssueInput, GithubIssueClient } from './githubIssueClient.js';
+import type { RateLimiter } from './feedbackAbuseGuard.js';
 
 class FakeGithubIssueClient implements GithubIssueClient {
   readonly calls: CreateIssueInput[] = [];

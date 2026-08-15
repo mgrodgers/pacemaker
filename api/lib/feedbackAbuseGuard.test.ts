@@ -1,5 +1,5 @@
 import { describe, expect, test } from 'vitest';
-import { InMemoryFixedWindowRateLimiter, isHoneypotTripped } from './feedbackAbuseGuard';
+import { InMemoryFixedWindowRateLimiter, isHoneypotTripped } from './feedbackAbuseGuard.js';
 
 describe('isHoneypotTripped', () => {
   test('is false for an empty honeypot value', () => {

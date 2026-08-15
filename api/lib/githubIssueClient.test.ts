@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, test, vi } from 'vitest';
-import { GithubApiError, RestGithubIssueClient } from './githubIssueClient';
+import { GithubApiError, RestGithubIssueClient } from './githubIssueClient.js';
 
 afterEach(() => {
   vi.unstubAllGlobals();

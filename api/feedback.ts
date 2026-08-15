@@ -1,7 +1,7 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
-import { RestGithubIssueClient } from './lib/githubIssueClient';
-import { InMemoryFixedWindowRateLimiter } from './lib/feedbackAbuseGuard';
-import { handleFeedbackSubmission } from './lib/feedbackRequestHandler';
+import { RestGithubIssueClient } from './lib/githubIssueClient.js';
+import { InMemoryFixedWindowRateLimiter } from './lib/feedbackAbuseGuard.js';
+import { handleFeedbackSubmission } from './lib/feedbackRequestHandler.js';
 
 const RATE_LIMIT_MAX = Number(process.env.FEEDBACK_RATE_LIMIT_MAX ?? 3);
 const RATE_LIMIT_WINDOW_MS = Number(process.env.FEEDBACK_RATE_LIMIT_WINDOW_MS ?? 10 * 60 * 1000);

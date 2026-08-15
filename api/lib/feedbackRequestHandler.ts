@@ -1,6 +1,6 @@
-import type { GithubIssueClient } from './githubIssueClient';
-import type { RateLimiter } from './feedbackAbuseGuard';
-import { isHoneypotTripped } from './feedbackAbuseGuard';
+import type { GithubIssueClient } from './githubIssueClient.js';
+import type { RateLimiter } from './feedbackAbuseGuard.js';
+import { isHoneypotTripped } from './feedbackAbuseGuard.js';
 
 export type FeedbackCategory = 'bug' | 'feature-idea' | 'other';
 
