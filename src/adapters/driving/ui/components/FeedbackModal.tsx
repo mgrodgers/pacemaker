@@ -61,7 +61,13 @@ export function FeedbackModal({ onClose }: FeedbackModalProps) {
           />
         </div>
 
-        <button type="button" className="btn btn-primary btn-block" data-testid="feedback-submit" onClick={submit}>
+        <button
+          type="button"
+          className="btn btn-primary btn-block"
+          data-testid="feedback-submit"
+          disabled={description.trim() === ''}
+          onClick={submit}
+        >
           Send feedback
         </button>
       </div>
