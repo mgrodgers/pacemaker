@@ -32,6 +32,7 @@ export default defineConfig({
       'tests/unit/**/*.test.ts',
       'tests/unit/**/*.test.tsx',
       'tests/acceptance/**/*.test.ts',
+      'api/**/*.test.ts',
     ],
   },
 });

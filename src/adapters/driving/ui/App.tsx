@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { PlansScreen } from './components/PlansScreen';
 import { PlanScreen } from './components/PlanScreen';
 import { SettingsScreen } from './components/SettingsScreen';
+import { FeedbackButton } from './components/FeedbackButton';
 import type { PlanId } from '../../../domain/valueObjects/Ids';
 
 type View = 'plans' | 'plan' | 'settings';
@@ -39,6 +40,7 @@ export function App() {
           onOpenSettings={() => setView('settings')}
         />
       )}
+      <FeedbackButton />
     </div>
   );
 }

@@ -73,6 +73,14 @@ export function SettingsIcon({ size = 15 }: IconProps) {
   );
 }
 
+export function FeedbackIcon({ size = 15 }: IconProps) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 256 256" fill="none" stroke="currentColor" strokeWidth={16} strokeLinecap="round" strokeLinejoin="round">
+      <path d="M32,56 A16,16 0 0 1 48,40 L208,40 A16,16 0 0 1 224,56 L224,152 A16,16 0 0 1 208,168 L96,168 L56,208 L56,168 L48,168 A16,16 0 0 1 32,152 Z" />
+    </svg>
+  );
+}
+
 export function CloseIcon({ size = 12 }: IconProps) {
   return (
     <svg width={size} height={size} viewBox="0 0 256 256" fill="none" stroke="currentColor" strokeWidth={24} strokeLinecap="round">

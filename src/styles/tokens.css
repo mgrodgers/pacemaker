@@ -145,6 +145,15 @@ input[type='number']::-webkit-inner-spin-button { -webkit-appearance: none; marg
 .elev-md { box-shadow: var(--shadow-md); }
 .elev-lg { box-shadow: var(--shadow-lg); }
 
+/* — overlay (modal backdrop) — */
+.overlay {
+  position: fixed; inset: 0; z-index: 20;
+  display: flex; align-items: flex-end; justify-content: center;
+  background: color-mix(in srgb, black 55%, transparent);
+  padding: var(--space-4);
+}
+.overlay .card { width: min(420px, 100%); }
+
 /* — tags — */
 .tag {
   display: inline-flex; align-items: center; font-size: 11px;

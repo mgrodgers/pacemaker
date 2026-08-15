@@ -61,3 +61,14 @@ npm run preview
 `build` produces a static, installable PWA in `dist/`; `preview` serves that
 build locally (default [http://localhost:4173](http://localhost:4173)) so you can sanity-check the production
 bundle before deploying.
+
+## Feedback button (api/feedback.ts)
+
+The in-app Feedback button posts to a Vercel serverless function
+(`api/feedback.ts`) that files a GitHub issue on `GITHUB_REPO` using
+`GITHUB_TOKEN`. Copy `.env.example` to `.env` for local reference, and set
+`GITHUB_TOKEN`/`GITHUB_REPO` as Vercel Environment Variables (Production +
+Preview) on the deployed project — `vite dev`/`vite preview` can't execute
+the function locally; use `vercel dev` for that. See
+[`docs/plans/feedback-github-issue.md`](docs/plans/feedback-github-issue.md)
+for the full design and setup steps.
