@@ -1,15 +1,16 @@
 import { useState } from 'react';
 import { usePlansController } from '../hooks/usePlansController';
 import type { PlanId } from '../../../../domain/valueObjects/Ids';
-import { PlusIcon, RenameIcon, DuplicateIcon, DeleteIcon, SettingsIcon, RouteIcon } from './icons';
+import { PlusIcon, RenameIcon, DuplicateIcon, DeleteIcon, SettingsIcon, RouteIcon, HelpIcon } from './icons';
 
 interface PlansScreenProps {
   onOpenPlan: (id: PlanId) => void;
   onOpenSettings: () => void;
   onOpenCoursePredictor: () => void;
+  onOpenHelp: () => void;
 }
 
-export function PlansScreen({ onOpenPlan, onOpenSettings, onOpenCoursePredictor }: PlansScreenProps) {
+export function PlansScreen({ onOpenPlan, onOpenSettings, onOpenCoursePredictor, onOpenHelp }: PlansScreenProps) {
   const { plans, createPlan, renamePlan, duplicatePlan, deletePlan } = usePlansController();
   const [renamingId, setRenamingId] = useState<PlanId | null>(null);
   const [renameValue, setRenameValue] = useState('');
@@ -21,8 +22,16 @@ export function PlansScreen({ onOpenPlan, onOpenSettings, onOpenCoursePredictor 
         <button
           type="button"
           className="btn btn-ghost btn-icon"
-          aria-label="Course Predictor"
+          aria-label="Help"
           style={{ marginLeft: 'auto' }}
+          onClick={onOpenHelp}
+        >
+          <HelpIcon />
+        </button>
+        <button
+          type="button"
+          className="btn btn-ghost btn-icon"
+          aria-label="Course Predictor"
           onClick={onOpenCoursePredictor}
         >
           <RouteIcon />
