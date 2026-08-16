@@ -89,6 +89,39 @@ test('uploading a GPX and entering a target pace predicts a course time through 
   await expect(page.getByTestId('course-splits-table')).toBeVisible();
 });
 
+test('saving a course prediction lets it be reopened after a reload', async ({ page }) => {
+  const gpx = `<?xml version="1.0"?>
+<gpx><trk><trkseg>
+  <trkpt lat="51.5007" lon="-0.1246"><ele>10</ele></trkpt>
+  <trkpt lat="51.5107" lon="-0.1246"><ele>60</ele></trkpt>
+  <trkpt lat="51.5207" lon="-0.1246"><ele>10</ele></trkpt>
+</trkseg></trk></gpx>`;
+
+  await page.getByRole('button', { name: 'Course Predictor' }).click();
+  await page.getByTestId('gpx-file-input').setInputFiles({
+    name: 'saved-course.gpx',
+    mimeType: 'application/gpx+xml',
+    buffer: Buffer.from(gpx),
+  });
+  await page.getByLabel('Target pace').fill('5:00');
+  await page.getByRole('button', { name: 'Predict' }).click();
+  await expect(page.getByTestId('course-total-time')).toBeVisible();
+  const totalTime = await page.getByTestId('course-total-time').textContent();
+
+  await page.getByRole('button', { name: 'Save prediction' }).click();
+  await expect(page.getByTestId('saved-prediction-item')).toBeVisible();
+
+  await page.reload();
+  await page.getByRole('button', { name: 'Course Predictor' }).click();
+  await expect(page.getByTestId('saved-prediction-item')).toBeVisible();
+
+  await page.getByTestId('open-saved-prediction').click();
+  await expect(page.getByTestId('course-total-time')).toHaveText(totalTime ?? '');
+
+  await page.getByRole('button', { name: /Delete saved prediction saved-course\.gpx/ }).click();
+  await expect(page.getByTestId('saved-predictions-list')).toHaveCount(0);
+});
+
 test.describe('mobile layout does not overflow horizontally', () => {
   test('a long interval segment and the add-segment row stay within narrow viewports', async ({ page }) => {
     const dsl = new PlannerDsl(new UiPlannerDriver(page));

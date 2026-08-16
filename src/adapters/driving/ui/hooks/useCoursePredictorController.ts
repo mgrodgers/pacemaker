@@ -2,6 +2,8 @@ import { useCallback, useState } from 'react';
 import { useCoursePredictionService } from './useCoursePredictionService';
 import { usePlanningService } from './usePlanningService';
 import type { CoursePredictionView } from '../../../../application/dto/CoursePredictionViews';
+import type { SavedCoursePrediction } from '../../../../domain/entities/SavedCoursePrediction';
+import type { CoursePredictionId } from '../../../../domain/valueObjects/Ids';
 
 function readFileAsText(file: File): Promise<string> {
   return new Promise((resolve, reject) => {
@@ -12,9 +14,10 @@ function readFileAsText(file: File): Promise<string> {
   });
 }
 
-/** Drives the standalone course predictor screen. State is intentionally
- * local/ephemeral — nothing here is persisted, so navigating away and back
- * loses the upload and result (by design, per the feature's V1 scope). */
+/** Drives the standalone course predictor screen. Upload/edit state (file,
+ * pace draft) is local/ephemeral by design — navigating away loses an
+ * in-progress upload. A predicted result can be explicitly saved, which
+ * persists it via CoursePredictionService so it survives navigation/reload. */
 export function useCoursePredictorController() {
   const service = useCoursePredictionService();
   const units = usePlanningService().getPaceDefaults().units;
@@ -24,6 +27,9 @@ export function useCoursePredictorController() {
   const [paceRaw, setPaceRaw] = useState('');
   const [result, setResult] = useState<CoursePredictionView | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [savedPredictions, setSavedPredictions] = useState<SavedCoursePrediction[]>(() =>
+    service.getSavedPredictions(),
+  );
 
   const loadFile = useCallback(async (file: File) => {
     setError(null);
@@ -53,5 +59,39 @@ export function useCoursePredictorController() {
     }
   }, [service, gpxContent, paceRaw, units]);
 
-  return { fileName, paceRaw, setPaceRaw, result, error, units, loadFile, predict };
+  const savePrediction = useCallback(() => {
+    if (result == null) return;
+    service.savePrediction(fileName ?? 'course.gpx', paceRaw, result);
+    setSavedPredictions(service.getSavedPredictions());
+  }, [service, fileName, paceRaw, result]);
+
+  const openSavedPrediction = useCallback((prediction: SavedCoursePrediction) => {
+    setFileName(prediction.fileName);
+    setPaceRaw(prediction.targetPaceRaw);
+    setResult({ units: prediction.units, totalTime: prediction.totalTime, splits: prediction.splits });
+    setError(null);
+  }, []);
+
+  const deleteSavedPrediction = useCallback(
+    (id: CoursePredictionId) => {
+      service.deleteSavedPrediction(id);
+      setSavedPredictions(service.getSavedPredictions());
+    },
+    [service],
+  );
+
+  return {
+    fileName,
+    paceRaw,
+    setPaceRaw,
+    result,
+    error,
+    units,
+    loadFile,
+    predict,
+    savedPredictions,
+    savePrediction,
+    openSavedPrediction,
+    deleteSavedPrediction,
+  };
 }
