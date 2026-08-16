@@ -4,7 +4,16 @@ import { InMemoryPlanRepository } from '../../../src/adapters/driven/persistence
 import { InMemoryPaceDefaultsRepository } from '../../../src/adapters/driven/persistence/InMemoryPaceDefaultsRepository';
 import { PlanNotFoundError, SegmentNotFoundError, StepNotFoundError } from '../../../src/domain/errors/DomainError';
 import type { IdGenerator } from '../../../src/application/ports/out/IdGenerator';
-import { planId, segmentId, stepId, type PlanId, type SegmentId, type StepId } from '../../../src/domain/valueObjects/Ids';
+import {
+  planId,
+  segmentId,
+  stepId,
+  coursePredictionId,
+  type PlanId,
+  type SegmentId,
+  type StepId,
+  type CoursePredictionId,
+} from '../../../src/domain/valueObjects/Ids';
 
 class FixedIdGenerator implements IdGenerator {
   private planSeq = 0;
@@ -21,6 +30,10 @@ class FixedIdGenerator implements IdGenerator {
 
   newStepId(): StepId {
     return stepId(`st${++this.stepSeq}`);
+  }
+
+  newCoursePredictionId(): CoursePredictionId {
+    return coursePredictionId(`cp${++this.stepSeq}`);
   }
 }
 

@@ -7,6 +7,7 @@ import { LocalStoragePaceDefaultsRepository } from '../adapters/driven/persisten
 import { RandomIdGenerator } from '../adapters/driven/persistence/IdGenerator';
 import { HttpFeedbackSubmitter } from '../adapters/driven/feedback/HttpFeedbackSubmitter';
 import { GpxCourseParserAdapter } from '../adapters/driven/gpx/GpxCourseParserAdapter';
+import { LocalStorageCoursePredictionRepository } from '../adapters/driven/persistence/LocalStorageCoursePredictionRepository';
 import type { PlanningService } from '../application/ports/in/PlanningService';
 import type { FeedbackService } from '../application/ports/in/FeedbackService';
 import type { CoursePredictionService } from '../application/ports/in/CoursePredictionService';
@@ -40,7 +41,11 @@ let coursePredictionService: CoursePredictionService | null = null;
 
 export function getCoursePredictionService(): CoursePredictionService {
   if (!coursePredictionService) {
-    coursePredictionService = new CoursePredictionServiceImpl(new GpxCourseParserAdapter());
+    coursePredictionService = new CoursePredictionServiceImpl(
+      new GpxCourseParserAdapter(),
+      new LocalStorageCoursePredictionRepository(),
+      new RandomIdGenerator(),
+    );
   }
   return coursePredictionService;
 }

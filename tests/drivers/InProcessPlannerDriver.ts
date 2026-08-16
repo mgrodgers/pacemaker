@@ -2,7 +2,16 @@ import { PlanningServiceImpl } from '../../src/application/PlanningServiceImpl';
 import { InMemoryPlanRepository } from '../../src/adapters/driven/persistence/InMemoryPlanRepository';
 import { InMemoryPaceDefaultsRepository } from '../../src/adapters/driven/persistence/InMemoryPaceDefaultsRepository';
 import type { IdGenerator } from '../../src/application/ports/out/IdGenerator';
-import { planId, segmentId, stepId, type PlanId, type SegmentId, type StepId } from '../../src/domain/valueObjects/Ids';
+import {
+  planId,
+  segmentId,
+  stepId,
+  coursePredictionId,
+  type PlanId,
+  type SegmentId,
+  type StepId,
+  type CoursePredictionId,
+} from '../../src/domain/valueObjects/Ids';
 import type { SegmentType } from '../../src/domain/valueObjects/SegmentType';
 import type { StepKind } from '../../src/domain/valueObjects/StepKind';
 import type { FieldMode, SegmentField } from '../../src/domain/valueObjects/FieldMode';
@@ -18,6 +27,9 @@ class SequentialIdGenerator implements IdGenerator {
   }
   newStepId(): StepId {
     return stepId(`st${++this.n}`);
+  }
+  newCoursePredictionId(): CoursePredictionId {
+    return coursePredictionId(`cp${++this.n}`);
   }
 }
 
