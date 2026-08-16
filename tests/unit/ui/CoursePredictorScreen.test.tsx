@@ -1,5 +1,5 @@
-import { describe, expect, test } from 'vitest';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { describe, expect, test, beforeEach } from 'vitest';
+import { render, screen, fireEvent, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { CoursePredictorScreen } from '../../../src/adapters/driving/ui/components/CoursePredictorScreen';
 
@@ -15,6 +15,10 @@ function gpxFile(content: string, name = 'course.gpx') {
 }
 
 describe('CoursePredictorScreen', () => {
+  beforeEach(() => {
+    window.localStorage.clear();
+  });
+
   test('uploading a GPX via the file picker and entering a pace predicts a total time and splits', async () => {
     const user = userEvent.setup();
     render(<CoursePredictorScreen onBack={() => {}} />);
@@ -74,5 +78,57 @@ describe('CoursePredictorScreen', () => {
     render(<CoursePredictorScreen onBack={() => (wentBack = true)} />);
     await user.click(screen.getByRole('button', { name: 'Back' }));
     expect(wentBack).toBe(true);
+  });
+
+  test('saving a prediction adds it to the saved predictions list', async () => {
+    const user = userEvent.setup();
+    render(<CoursePredictorScreen onBack={() => {}} />);
+
+    const input = screen.getByTestId('gpx-file-input') as HTMLInputElement;
+    await userEvent.upload(input, gpxFile(VALID_GPX));
+    await user.type(screen.getByLabelText('Target pace'), '5:00');
+    await user.click(screen.getByRole('button', { name: 'Predict' }));
+    await waitFor(() => expect(screen.getByTestId('course-total-time')).toBeInTheDocument());
+
+    await user.click(screen.getByRole('button', { name: 'Save prediction' }));
+
+    expect(screen.getByTestId('saved-predictions-list')).toBeInTheDocument();
+    expect(screen.getAllByTestId('saved-prediction-item')).toHaveLength(1);
+  });
+
+  test('reopening a saved prediction shows its result without re-uploading', async () => {
+    const user = userEvent.setup();
+    render(<CoursePredictorScreen onBack={() => {}} />);
+
+    const input = screen.getByTestId('gpx-file-input') as HTMLInputElement;
+    await userEvent.upload(input, gpxFile(VALID_GPX));
+    await user.type(screen.getByLabelText('Target pace'), '5:00');
+    await user.click(screen.getByRole('button', { name: 'Predict' }));
+    await waitFor(() => expect(screen.getByTestId('course-total-time')).toBeInTheDocument());
+    const totalTime = screen.getByTestId('course-total-time').textContent;
+    await user.click(screen.getByRole('button', { name: 'Save prediction' }));
+
+    render(<CoursePredictorScreen onBack={() => {}} />);
+    const items = screen.getAllByTestId('saved-prediction-item');
+    await user.click(within(items[items.length - 1]).getByTestId('open-saved-prediction'));
+
+    const totalTimes = screen.getAllByTestId('course-total-time');
+    expect(totalTimes[totalTimes.length - 1].textContent).toBe(totalTime);
+  });
+
+  test('deleting a saved prediction removes it from the list', async () => {
+    const user = userEvent.setup();
+    render(<CoursePredictorScreen onBack={() => {}} />);
+
+    const input = screen.getByTestId('gpx-file-input') as HTMLInputElement;
+    await userEvent.upload(input, gpxFile(VALID_GPX));
+    await user.type(screen.getByLabelText('Target pace'), '5:00');
+    await user.click(screen.getByRole('button', { name: 'Predict' }));
+    await waitFor(() => expect(screen.getByTestId('course-total-time')).toBeInTheDocument());
+    await user.click(screen.getByRole('button', { name: 'Save prediction' }));
+
+    await user.click(screen.getByRole('button', { name: /Delete saved prediction course\.gpx/ }));
+
+    expect(screen.queryByTestId('saved-predictions-list')).not.toBeInTheDocument();
   });
 });
