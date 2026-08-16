@@ -19,7 +19,7 @@ describe('HelpScreen', () => {
     const user = userEvent.setup();
     let wentBack = false;
     render(<HelpScreen onBack={() => (wentBack = true)} />);
-    await user.click(screen.getByRole('button', { name: /back/i }));
+    await user.click(screen.getByRole('button', { name: 'Back to plans' }));
     expect(wentBack).toBe(true);
   });
 });

@@ -1,4 +1,4 @@
-import { BackIcon, PlusIcon, RenameIcon, DragHandleIcon, RouteIcon } from './icons';
+import { BackIcon, PlusIcon, RenameIcon, DragHandleIcon, RouteIcon, TotalsIcon } from './icons';
 
 interface HelpScreenProps {
   onBack: () => void;
@@ -68,7 +68,7 @@ export function HelpScreen({ onBack }: HelpScreenProps) {
           Drag a segment by its handle to move it earlier or later in the plan.
         </HelpSection>
 
-        <HelpSection icon={<BackIcon size={18} />} title="Read the totals and best efforts">
+        <HelpSection icon={<TotalsIcon size={18} />} title="Read the totals and best efforts">
           The totals bar at the bottom of a plan shows the overall time, distance, and pace, plus your best potential effort at standard race distances.
         </HelpSection>
 
