@@ -89,6 +89,15 @@ test('uploading a GPX and entering a target pace predicts a course time through 
   await expect(page.getByTestId('course-splits-table')).toBeVisible();
 });
 
+test('opening help from the plans list shows instructions and returns via back', async ({ page }) => {
+  await page.getByRole('button', { name: 'Help' }).click();
+  await expect(page.getByText('How to use Run Planner')).toBeVisible();
+  await expect(page.getByText(/course predictor/i).first()).toBeVisible();
+
+  await page.getByRole('button', { name: 'Back to plans' }).click();
+  await expect(page.getByText('Your plans')).toBeVisible();
+});
+
 test.describe('mobile layout does not overflow horizontally', () => {
   test('a long interval segment and the add-segment row stay within narrow viewports', async ({ page }) => {
     const dsl = new PlannerDsl(new UiPlannerDriver(page));
@@ -118,6 +127,17 @@ test.describe('mobile layout does not overflow horizontally', () => {
       expect(overflowExpanded, `horizontal overflow at ${width}px width (expanded)`).toBeLessThanOrEqual(0);
       await page.getByTestId('segment-card').first().click();
     }
+  });
+
+  test('the help page stays within a narrow viewport and its content is visible', async ({ page }) => {
+    await page.setViewportSize({ width: 375, height: 812 });
+    await page.getByRole('button', { name: 'Help' }).click();
+    await expect(page.getByText('How to use Run Planner')).toBeVisible();
+
+    const overflow = await page.evaluate(
+      () => document.documentElement.scrollWidth - document.documentElement.clientWidth
+    );
+    expect(overflow).toBeLessThanOrEqual(0);
   });
 });
 
