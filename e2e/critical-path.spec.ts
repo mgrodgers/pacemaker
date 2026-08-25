@@ -57,6 +57,18 @@ test('setting a default pace on the settings page prefills a matching new segmen
   expect((await plan.segmentSummaries())[0]).toBe('10:00 · 2km @ 5:00/km');
 });
 
+test('setting a plan start time computes the end time through the real UI', async ({ page }) => {
+  const dsl = new PlannerDsl(new UiPlannerDriver(page));
+  const plan = dsl
+    .onPlan('E2E Start Time')
+    .addTempo({ mode: 'time-pace', time: '45:00', pace: '6:00' })
+    .setStartTime('06:00');
+  expect(await plan.planTime()).toEqual({
+    start: { value: '06:00', dayOffset: 0 },
+    end: { value: '06:45', dayOffset: 0 },
+  });
+});
+
 test('renaming, duplicating, and deleting a plan works end to end', async ({ page }) => {
   const dsl = new PlannerDsl(new UiPlannerDriver(page));
   const renamed = dsl
