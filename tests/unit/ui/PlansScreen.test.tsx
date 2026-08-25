@@ -18,7 +18,7 @@ describe('PlansScreen', () => {
   test('creating a new plan opens it', async () => {
     const user = userEvent.setup();
     const opened: PlanId[] = [];
-    render(<PlansScreen onOpenPlan={(id) => opened.push(id)} onOpenSettings={() => {}} onOpenCoursePredictor={() => {}} />);
+    render(<PlansScreen onOpenPlan={(id) => opened.push(id)} onOpenSettings={() => {}} onOpenCoursePredictor={() => {}} onOpenHelp={() => {}} />);
 
     await user.click(screen.getByRole('button', { name: 'New plan' }));
     expect(opened).toHaveLength(1);
@@ -28,7 +28,7 @@ describe('PlansScreen', () => {
   test('clicking an existing plan card opens that plan', async () => {
     const user = userEvent.setup();
     const opened: PlanId[] = [];
-    render(<PlansScreen onOpenPlan={(id) => opened.push(id)} onOpenSettings={() => {}} onOpenCoursePredictor={() => {}} />);
+    render(<PlansScreen onOpenPlan={(id) => opened.push(id)} onOpenSettings={() => {}} onOpenCoursePredictor={() => {}} onOpenHelp={() => {}} />);
 
     await user.click(screen.getByRole('button', { name: 'New plan' }));
     const createdId = opened[0]!;
@@ -41,7 +41,7 @@ describe('PlansScreen', () => {
 
   test('rename, duplicate, and delete keep the list in sync', async () => {
     const user = userEvent.setup();
-    render(<PlansScreen onOpenPlan={() => {}} onOpenSettings={() => {}} onOpenCoursePredictor={() => {}} />);
+    render(<PlansScreen onOpenPlan={() => {}} onOpenSettings={() => {}} onOpenCoursePredictor={() => {}} onOpenHelp={() => {}} />);
     await user.click(screen.getByRole('button', { name: 'New plan' }));
     const countBeforeActions = screen.getAllByTestId('plan-card').length;
 
@@ -61,5 +61,20 @@ describe('PlansScreen', () => {
     await user.click(within(copyCard).getByRole('button', { name: 'Delete' }));
     expect(screen.getAllByTestId('plan-card')).toHaveLength(countBeforeActions);
     expect(screen.queryByText('My Plan copy')).not.toBeInTheDocument();
+  });
+
+  test('the help button calls onOpenHelp', async () => {
+    const user = userEvent.setup();
+    let opened = false;
+    render(
+      <PlansScreen
+        onOpenPlan={() => {}}
+        onOpenSettings={() => {}}
+        onOpenCoursePredictor={() => {}}
+        onOpenHelp={() => (opened = true)}
+      />,
+    );
+    await user.click(screen.getByRole('button', { name: 'Help' }));
+    expect(opened).toBe(true);
   });
 });

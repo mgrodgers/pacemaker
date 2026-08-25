@@ -3,10 +3,11 @@ import { PlansScreen } from './components/PlansScreen';
 import { PlanScreen } from './components/PlanScreen';
 import { SettingsScreen } from './components/SettingsScreen';
 import { CoursePredictorScreen } from './components/CoursePredictorScreen';
+import { HelpScreen } from './components/HelpScreen';
 import { FeedbackButton } from './components/FeedbackButton';
 import type { PlanId } from '../../../domain/valueObjects/Ids';
 
-type View = 'plans' | 'plan' | 'settings' | 'course-predictor';
+type View = 'plans' | 'plan' | 'settings' | 'course-predictor' | 'help';
 
 export function App() {
   const [view, setView] = useState<View>('plans');
@@ -26,6 +27,7 @@ export function App() {
     >
       {view === 'settings' && <SettingsScreen onBack={returnFromSettings} />}
       {view === 'course-predictor' && <CoursePredictorScreen onBack={() => setView('plans')} />}
+      {view === 'help' && <HelpScreen onBack={() => setView('plans')} />}
       {view === 'plan' && activePlanId && (
         <PlanScreen
           planId={activePlanId}
@@ -41,6 +43,7 @@ export function App() {
           }}
           onOpenSettings={() => setView('settings')}
           onOpenCoursePredictor={() => setView('course-predictor')}
+          onOpenHelp={() => setView('help')}
         />
       )}
       <FeedbackButton />

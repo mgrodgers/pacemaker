@@ -91,6 +91,24 @@ export function RouteIcon({ size = 15 }: IconProps) {
   );
 }
 
+export function TotalsIcon({ size = 15 }: IconProps) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 256 256" fill="none" stroke="currentColor" strokeWidth={18} strokeLinecap="round" strokeLinejoin="round">
+      <path d="M48,208 L48,152 M128,208 L128,104 M208,208 L208,56" />
+    </svg>
+  );
+}
+
+export function HelpIcon({ size = 15 }: IconProps) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 256 256" fill="none" stroke="currentColor" strokeWidth={16} strokeLinecap="round" strokeLinejoin="round">
+      <circle cx="128" cy="128" r="96" />
+      <path d="M96,96 A32,32 0 1 1 140,142 C132,148 128,154 128,166" />
+      <circle cx="128" cy="196" r="7" fill="currentColor" stroke="none" />
+    </svg>
+  );
+}
+
 export function CloseIcon({ size = 12 }: IconProps) {
   return (
     <svg width={size} height={size} viewBox="0 0 256 256" fill="none" stroke="currentColor" strokeWidth={24} strokeLinecap="round">
