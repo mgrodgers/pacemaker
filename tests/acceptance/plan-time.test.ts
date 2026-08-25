@@ -24,4 +24,16 @@ describe('plan start/end time', () => {
       end: { value: '19:00', dayOffset: 0 },
     });
   });
+
+  test('setting the end time after the start time makes end the new anchor', async () => {
+    const plan = dsl
+      .onPlan('Switch anchor')
+      .addTempo({ mode: 'time-pace', time: '45:00', pace: '6:00' })
+      .setStartTime('06:00')
+      .setEndTime('08:00');
+    expect(await plan.planTime()).toEqual({
+      start: { value: '07:15', dayOffset: 0 },
+      end: { value: '08:00', dayOffset: 0 },
+    });
+  });
 });
