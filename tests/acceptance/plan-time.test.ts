@@ -97,4 +97,20 @@ describe('plan start/end time', () => {
       end: { value: '06:45', dayOffset: 0 },
     });
   });
+
+  test('a late start time that crosses midnight shows the end time a day ahead', async () => {
+    const plan = dsl.onPlan('Overnight').addTempo({ mode: 'time-pace', time: '60:00', pace: '6:00' }).setStartTime('23:30');
+    expect(await plan.planTime()).toEqual({
+      start: { value: '23:30', dayOffset: 0 },
+      end: { value: '00:30', dayOffset: 1 },
+    });
+  });
+
+  test('an early end time anchored on end shows the derived start a day behind', async () => {
+    const plan = dsl.onPlan('Overnight, anchored on end').addTempo({ mode: 'time-pace', time: '60:00', pace: '6:00' }).setEndTime('00:30');
+    expect(await plan.planTime()).toEqual({
+      start: { value: '23:30', dayOffset: -1 },
+      end: { value: '00:30', dayOffset: 0 },
+    });
+  });
 });
