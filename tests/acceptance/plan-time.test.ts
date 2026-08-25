@@ -9,6 +9,14 @@ beforeEach(() => {
 });
 
 describe('plan start/end time', () => {
+  test('a plan with timed segments but no time set yet shows blank start/end fields', async () => {
+    const plan = dsl.onPlan('Not set yet').addTempo({ mode: 'time-pace', time: '45:00', pace: '6:00' });
+    expect(await plan.planTime()).toEqual({
+      start: { value: '', dayOffset: 0 },
+      end: { value: '', dayOffset: 0 },
+    });
+  });
+
   test('setting a start time calculates the end time from the plan’s total', async () => {
     const plan = dsl.onPlan('Morning run').addTempo({ mode: 'time-pace', time: '45:00', pace: '6:00' }).setStartTime('06:00');
     expect(await plan.planTime()).toEqual({
@@ -65,13 +73,16 @@ describe('plan start/end time', () => {
     });
   });
 
-  test('explicitly clearing the plan time removes both start and end', async () => {
+  test('explicitly clearing the plan time blanks both start and end', async () => {
     const plan = dsl
       .onPlan('Cleared')
       .addTempo({ mode: 'time-pace', time: '45:00', pace: '6:00' })
       .setStartTime('06:00')
       .clearTime();
-    expect(await plan.planTime()).toBeNull();
+    expect(await plan.planTime()).toEqual({
+      start: { value: '', dayOffset: 0 },
+      end: { value: '', dayOffset: 0 },
+    });
   });
 
   test('blanking the anchor field has the same effect as an explicit clear', async () => {
@@ -80,7 +91,10 @@ describe('plan start/end time', () => {
       .addTempo({ mode: 'time-pace', time: '45:00', pace: '6:00' })
       .setStartTime('06:00')
       .setStartTime('');
-    expect(await plan.planTime()).toBeNull();
+    expect(await plan.planTime()).toEqual({
+      start: { value: '', dayOffset: 0 },
+      end: { value: '', dayOffset: 0 },
+    });
   });
 
   test('a plan with no timed segments has no start/end time to display, even if one was set earlier', async () => {
@@ -122,7 +136,10 @@ describe('plan start/end time', () => {
   test('duplicating a plan does not carry over its start/end time', async () => {
     const source = dsl.onPlan('Original').addTempo({ mode: 'time-pace', time: '45:00', pace: '6:00' }).setStartTime('06:00');
     const copy = source.duplicate();
-    expect(await copy.planTime()).toBeNull();
+    expect(await copy.planTime()).toEqual({
+      start: { value: '', dayOffset: 0 },
+      end: { value: '', dayOffset: 0 },
+    });
     expect(await source.planTime()).toEqual({
       start: { value: '06:00', dayOffset: 0 },
       end: { value: '06:45', dayOffset: 0 },

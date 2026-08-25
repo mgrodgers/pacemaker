@@ -17,6 +17,7 @@ import type {
   PaceDefaultsView,
   PlanDetail,
   PlanListItem,
+  PlanTimeFieldView,
   PlanTimeView,
   SegmentDetail,
   StepDetail,
@@ -98,10 +99,12 @@ export function toSegmentDetail(segment: Segment, units: Units): SegmentDetail {
   };
 }
 
+const BLANK_TIME_FIELD: PlanTimeFieldView = { value: '', dayOffset: 0 };
+
 function toPlanTimeView(plan: Plan): PlanTimeView | null {
-  if (!plan.time) return null;
   const totalTimeSec = summarizePlan(plan.segments).totalTimeSec;
   if (totalTimeSec <= 0) return null;
+  if (!plan.time) return { start: BLANK_TIME_FIELD, end: BLANK_TIME_FIELD };
 
   const anchor = ClockTime.ofMinutes(plan.time.minutesSinceMidnight);
   const duration = Duration.ofSeconds(totalTimeSec);
