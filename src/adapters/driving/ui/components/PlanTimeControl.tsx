@@ -21,10 +21,16 @@ export function PlanTimeControl({ time, onSetStartTime, onSetEndTime, onClear }:
       data-testid="plan-time"
       style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-2)', padding: 'var(--space-2) 0' }}
     >
-      <TimeField label="Start time" field={time.start} onChange={onSetStartTime} testId="plan-time-start" />
-      <span aria-hidden="true">→</span>
-      <TimeField label="End time" field={time.end} onChange={onSetEndTime} testId="plan-time-end" />
-      <button type="button" className="btn btn-ghost btn-icon" aria-label="Clear time" onClick={onClear}>
+      <TimeField id="plan-time-start" label="Start time" field={time.start} onChange={onSetStartTime} />
+      <span aria-hidden="true" style={{ marginTop: 'var(--space-4)' }}>→</span>
+      <TimeField id="plan-time-end" label="End time" field={time.end} onChange={onSetEndTime} />
+      <button
+        type="button"
+        className="btn btn-ghost btn-icon"
+        aria-label="Clear time"
+        onClick={onClear}
+        style={{ marginTop: 'var(--space-4)' }}
+      >
         ×
       </button>
     </div>
@@ -32,28 +38,25 @@ export function PlanTimeControl({ time, onSetStartTime, onSetEndTime, onClear }:
 }
 
 function TimeField({
+  id,
   label,
   field,
   onChange,
-  testId,
 }: {
+  id: string;
   label: string;
   field: PlanTimeFieldView;
   onChange: (raw: string) => void;
-  testId: string;
 }) {
   return (
-    <span style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-1)' }}>
-      <input
-        type="time"
-        className="input"
-        aria-label={label}
-        value={field.value}
-        onChange={(e) => onChange(e.target.value)}
-      />
-      <span data-testid={`${testId}-offset`} style={{ fontSize: 11, opacity: 0.6 }}>
-        {field.dayOffset !== 0 ? `${field.dayOffset > 0 ? '+' : ''}${field.dayOffset}d` : ''}
+    <div className="field">
+      <label htmlFor={id}>{label}</label>
+      <span style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-1)' }}>
+        <input id={id} type="time" className="input" value={field.value} onChange={(e) => onChange(e.target.value)} />
+        <span data-testid={`${id}-offset`} style={{ fontSize: 11, opacity: 0.6 }}>
+          {field.dayOffset !== 0 ? `${field.dayOffset > 0 ? '+' : ''}${field.dayOffset}d` : ''}
+        </span>
       </span>
-    </span>
+    </div>
   );
 }
