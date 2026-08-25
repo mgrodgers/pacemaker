@@ -118,4 +118,14 @@ describe('plan start/end time', () => {
     const plan = dsl.onPlan('Odd seconds').addTempo({ mode: 'time-pace', time: '45:33', pace: '6:00' }).setStartTime('06:00');
     expect((await plan.planTime())?.end.value).toBe('06:46');
   });
+
+  test('duplicating a plan does not carry over its start/end time', async () => {
+    const source = dsl.onPlan('Original').addTempo({ mode: 'time-pace', time: '45:00', pace: '6:00' }).setStartTime('06:00');
+    const copy = source.duplicate();
+    expect(await copy.planTime()).toBeNull();
+    expect(await source.planTime()).toEqual({
+      start: { value: '06:00', dayOffset: 0 },
+      end: { value: '06:45', dayOffset: 0 },
+    });
+  });
 });
