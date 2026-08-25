@@ -36,4 +36,32 @@ describe('plan start/end time', () => {
       end: { value: '08:00', dayOffset: 0 },
     });
   });
+
+  test('editing a segment after the start time is set updates the derived end time', async () => {
+    const plan = dsl
+      .onPlan('Grows after start')
+      .addTempo({ mode: 'time-pace', time: '45:00', pace: '6:00' })
+      .setStartTime('06:00');
+    expect((await plan.planTime())?.end.value).toBe('06:45');
+
+    plan.addEasy({ mode: 'time-pace', time: '15:00', pace: '7:00' });
+    expect(await plan.planTime()).toEqual({
+      start: { value: '06:00', dayOffset: 0 },
+      end: { value: '07:00', dayOffset: 0 },
+    });
+  });
+
+  test('editing a segment after the end time is set updates the derived start time', async () => {
+    const plan = dsl
+      .onPlan('Grows after end')
+      .addTempo({ mode: 'time-pace', time: '45:00', pace: '6:00' })
+      .setEndTime('19:00');
+    expect((await plan.planTime())?.start.value).toBe('18:15');
+
+    plan.addEasy({ mode: 'time-pace', time: '15:00', pace: '7:00' });
+    expect(await plan.planTime()).toEqual({
+      start: { value: '18:00', dayOffset: 0 },
+      end: { value: '19:00', dayOffset: 0 },
+    });
+  });
 });
