@@ -82,4 +82,19 @@ describe('plan start/end time', () => {
       .setStartTime('');
     expect(await plan.planTime()).toBeNull();
   });
+
+  test('a plan with no timed segments has no start/end time to display, even if one was set earlier', async () => {
+    const plan = dsl
+      .onPlan('Emptied out')
+      .addTempo({ mode: 'time-pace', time: '45:00', pace: '6:00' })
+      .setStartTime('06:00')
+      .removeSegment(0);
+    expect(await plan.planTime()).toBeNull();
+
+    plan.addTempo({ mode: 'time-pace', time: '45:00', pace: '6:00' });
+    expect(await plan.planTime()).toEqual({
+      start: { value: '06:00', dayOffset: 0 },
+      end: { value: '06:45', dayOffset: 0 },
+    });
+  });
 });
