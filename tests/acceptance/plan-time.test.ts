@@ -64,4 +64,13 @@ describe('plan start/end time', () => {
       end: { value: '19:00', dayOffset: 0 },
     });
   });
+
+  test('explicitly clearing the plan time removes both start and end', async () => {
+    const plan = dsl
+      .onPlan('Cleared')
+      .addTempo({ mode: 'time-pace', time: '45:00', pace: '6:00' })
+      .setStartTime('06:00')
+      .clearTime();
+    expect(await plan.planTime()).toBeNull();
+  });
 });
