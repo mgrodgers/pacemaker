@@ -128,4 +128,16 @@ describe('plan start/end time', () => {
       end: { value: '06:45', dayOffset: 0 },
     });
   });
+
+  test('renaming a plan keeps its start/end time', async () => {
+    const renamed = dsl
+      .onPlan('Old name')
+      .addTempo({ mode: 'time-pace', time: '45:00', pace: '6:00' })
+      .setStartTime('06:00')
+      .rename('New name');
+    expect(await renamed.planTime()).toEqual({
+      start: { value: '06:00', dayOffset: 0 },
+      end: { value: '06:45', dayOffset: 0 },
+    });
+  });
 });
