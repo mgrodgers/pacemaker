@@ -3,6 +3,7 @@ import { usePlanController } from '../hooks/usePlanController';
 import { SegmentList } from './SegmentList';
 import { SegmentTypeChips } from './SegmentTypeChips';
 import { TotalsBar } from './TotalsBar';
+import { PlanTimeControl } from './PlanTimeControl';
 import { ResultsPanel } from './ResultsPanel';
 import { BackIcon, SettingsIcon } from './icons';
 import type { PlanId, SegmentId } from '../../../../domain/valueObjects/Ids';
@@ -79,6 +80,13 @@ export function PlanScreen({ planId, onBack, onOpenSettings }: PlanScreenProps) 
             </label>
           </div>
         </div>
+
+        <PlanTimeControl
+          time={plan.time}
+          onSetStartTime={(raw) => controller.setPlanTime('start', raw)}
+          onSetEndTime={(raw) => controller.setPlanTime('end', raw)}
+          onClear={controller.clearPlanTime}
+        />
 
         <div className="seg" role="radiogroup" aria-label="View" style={{ width: '100%', marginBottom: 'var(--space-4)' }}>
           <label className="seg-opt" style={{ flex: 1, justifyContent: 'center' }}>

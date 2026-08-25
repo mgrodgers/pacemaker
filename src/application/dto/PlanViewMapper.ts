@@ -8,6 +8,7 @@ import { SEGMENT_TYPES, SEGMENT_TYPE_META } from '../../domain/valueObjects/Segm
 import { Duration } from '../../domain/valueObjects/Duration';
 import { Distance } from '../../domain/valueObjects/Distance';
 import { Pace } from '../../domain/valueObjects/Pace';
+import { ClockTime } from '../../domain/valueObjects/ClockTime';
 import type { PaceDefaults } from '../../domain/valueObjects/PaceDefaults';
 import { summarizePlan } from '../../domain/services/PlanSummaryCalculator';
 import type {
@@ -16,6 +17,8 @@ import type {
   PaceDefaultsView,
   PlanDetail,
   PlanListItem,
+  PlanTimeFieldView,
+  PlanTimeView,
   SegmentDetail,
   StepDetail,
   TotalsView,
@@ -96,11 +99,35 @@ export function toSegmentDetail(segment: Segment, units: Units): SegmentDetail {
   };
 }
 
+const BLANK_TIME_FIELD: PlanTimeFieldView = { value: '', dayOffset: 0 };
+
+function toPlanTimeView(plan: Plan): PlanTimeView | null {
+  const totalTimeSec = summarizePlan(plan.segments).totalTimeSec;
+  if (totalTimeSec <= 0) return null;
+  if (!plan.time) return { start: BLANK_TIME_FIELD, end: BLANK_TIME_FIELD };
+
+  const anchor = ClockTime.ofMinutes(plan.time.minutesSinceMidnight);
+  const duration = Duration.ofSeconds(totalTimeSec);
+  if (plan.time.side === 'start') {
+    const derived = anchor.plus(duration);
+    return {
+      start: { value: anchor.format(), dayOffset: 0 },
+      end: { value: derived.time.format(), dayOffset: derived.dayOffset },
+    };
+  }
+  const derived = anchor.minus(duration);
+  return {
+    start: { value: derived.time.format(), dayOffset: derived.dayOffset },
+    end: { value: anchor.format(), dayOffset: 0 },
+  };
+}
+
 export function toPlanDetail(plan: Plan): PlanDetail {
   return {
     id: plan.id,
     name: plan.name,
     units: plan.units,
+    time: toPlanTimeView(plan),
     segments: plan.segments.map((segment) => toSegmentDetail(segment, plan.units)),
   };
 }

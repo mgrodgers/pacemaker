@@ -2,7 +2,7 @@ import type { Locator, Page } from '@playwright/test';
 import type { FieldMode } from '../../src/domain/valueObjects/FieldMode';
 import type { SegmentType } from '../../src/domain/valueObjects/SegmentType';
 import type { StepKind } from '../../src/domain/valueObjects/StepKind';
-import type { EffortView, FieldSpec, IntervalSpec, PlannerDriver, TotalsView, UnitSystem } from './PlannerDriver';
+import type { EffortView, FieldSpec, IntervalSpec, PlanTimeView, PlannerDriver, TotalsView, UnitSystem } from './PlannerDriver';
 
 const SEGMENT_LABEL: Record<Exclude<SegmentType, never>, string> = {
   warmup: 'Warmup',
@@ -78,6 +78,37 @@ export class UiPlannerDriver implements PlannerDriver {
   async setUnits(planName: string, units: UnitSystem): Promise<void> {
     await this.ensureOnPlan(planName);
     await this.selectRadio(this.page, units);
+  }
+
+  async setStartTime(planName: string, raw: string): Promise<void> {
+    await this.ensureOnPlan(planName);
+    await this.page.getByLabel('Start time').fill(raw);
+  }
+
+  async setEndTime(planName: string, raw: string): Promise<void> {
+    await this.ensureOnPlan(planName);
+    await this.page.getByLabel('End time').fill(raw);
+  }
+
+  async clearTime(planName: string): Promise<void> {
+    await this.ensureOnPlan(planName);
+    await this.page.getByRole('button', { name: 'Clear time' }).click();
+  }
+
+  async planTime(planName: string): Promise<PlanTimeView | null> {
+    await this.ensureOnPlan(planName);
+    const control = this.page.getByTestId('plan-time');
+    if (!(await control.isVisible().catch(() => false))) return null;
+    return {
+      start: {
+        value: await this.page.getByLabel('Start time').inputValue(),
+        dayOffset: await this.readDayOffset('plan-time-start-offset'),
+      },
+      end: {
+        value: await this.page.getByLabel('End time').inputValue(),
+        dayOffset: await this.readDayOffset('plan-time-end-offset'),
+      },
+    };
   }
 
   async addSegment(planName: string, type: Exclude<SegmentType, 'interval'>, spec: FieldSpec): Promise<void> {
@@ -234,6 +265,14 @@ export class UiPlannerDriver implements PlannerDriver {
     }
     await this.ensureOnPlansList();
     await this.cardByName(name).click();
+  }
+
+  /** Reads the "+1d"/"-1d" suffix next to a derived time field, or 0 when
+   * that field is the anchor (no suffix rendered). */
+  private async readDayOffset(testId: string): Promise<number> {
+    const text = (await this.page.getByTestId(testId).textContent().catch(() => '')) ?? '';
+    const match = /([+-]\d+)d/.exec(text);
+    return match ? Number.parseInt(match[1]!, 10) : 0;
   }
 
   private async ensureBuilderSubview(): Promise<void> {

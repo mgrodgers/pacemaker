@@ -1,4 +1,12 @@
-import type { EffortView, FieldSpec, IntervalSpec, PlannerDriver, TotalsView, UnitSystem } from '../drivers/PlannerDriver';
+import type {
+  EffortView,
+  FieldSpec,
+  IntervalSpec,
+  PlanTimeView,
+  PlannerDriver,
+  TotalsView,
+  UnitSystem,
+} from '../drivers/PlannerDriver';
 import type { SegmentType } from '../../src/domain/valueObjects/SegmentType';
 import type { StepKind } from '../../src/domain/valueObjects/StepKind';
 
@@ -53,6 +61,18 @@ export class PlanBuilder {
 
   setUnits(units: UnitSystem): this {
     return this.enqueue(() => this.driver.setUnits(this.name, units));
+  }
+
+  setStartTime(raw: string): this {
+    return this.enqueue(() => this.driver.setStartTime(this.name, raw));
+  }
+
+  setEndTime(raw: string): this {
+    return this.enqueue(() => this.driver.setEndTime(this.name, raw));
+  }
+
+  clearTime(): this {
+    return this.enqueue(() => this.driver.clearTime(this.name));
   }
 
   addWarmup(spec: FieldSpec): this {
@@ -131,5 +151,10 @@ export class PlanBuilder {
   async segmentSummaries(): Promise<string[]> {
     await this.queue;
     return this.driver.segmentSummaries(this.name);
+  }
+
+  async planTime(): Promise<PlanTimeView | null> {
+    await this.queue;
+    return this.driver.planTime(this.name);
   }
 }

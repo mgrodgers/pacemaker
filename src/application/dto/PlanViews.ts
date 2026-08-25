@@ -39,10 +39,25 @@ export interface SegmentDetail {
   readonly steps: readonly StepDetail[];
 }
 
+/** One side of a plan's start/end time pair. `dayOffset` is 0 for the
+ * side that was directly set (the anchor), and ±N for the other,
+ * freshly-derived side when the plan's total duration crosses a
+ * midnight boundary. */
+export interface PlanTimeFieldView {
+  readonly value: string;
+  readonly dayOffset: number;
+}
+
+export interface PlanTimeView {
+  readonly start: PlanTimeFieldView;
+  readonly end: PlanTimeFieldView;
+}
+
 export interface PlanDetail {
   readonly id: PlanId;
   readonly name: string;
   readonly units: Units;
+  readonly time: PlanTimeView | null;
   readonly segments: readonly SegmentDetail[];
 }
 

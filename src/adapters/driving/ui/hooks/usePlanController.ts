@@ -1,6 +1,7 @@
 import { useCallback, useState } from 'react';
 import { usePlanningService } from './usePlanningService';
 import type { PlanId, SegmentId, StepId } from '../../../../domain/valueObjects/Ids';
+import type { PlanTimeSide } from '../../../../domain/entities/Plan';
 import type { Units } from '../../../../domain/valueObjects/Units';
 import type { FieldMode, SegmentField } from '../../../../domain/valueObjects/FieldMode';
 import type { SegmentType } from '../../../../domain/valueObjects/SegmentType';
@@ -30,6 +31,8 @@ export function usePlanController(planId: PlanId) {
 
     setUnits: run((units: Units) => service.setUnits(planId, units)),
     renamePlan: run((name: string) => service.renamePlan(planId, name)),
+    setPlanTime: run((side: PlanTimeSide, raw: string) => service.setPlanTime(planId, side, raw)),
+    clearPlanTime: run(() => service.clearPlanTime(planId)),
 
     addSegment: run((type: SegmentType) => service.addSegment(planId, type)),
     removeSegment: run((segmentId: SegmentId) => service.removeSegment(planId, segmentId)),

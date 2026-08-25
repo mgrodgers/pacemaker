@@ -2,6 +2,7 @@ import type { Plan } from '../domain/entities/Plan';
 import type { Segment } from '../domain/entities/Segment';
 import type { Step } from '../domain/entities/Step';
 import type { PlanId, SegmentId, StepId } from '../domain/valueObjects/Ids';
+import type { PlanTimeSide } from '../domain/entities/Plan';
 import type { Units } from '../domain/valueObjects/Units';
 import type { FieldMode, SegmentField } from '../domain/valueObjects/FieldMode';
 import type { SegmentType } from '../domain/valueObjects/SegmentType';
@@ -15,6 +16,7 @@ import {
   type DerivedFields,
 } from '../domain/services/SegmentCalculator';
 import { Duration } from '../domain/valueObjects/Duration';
+import { ClockTime } from '../domain/valueObjects/ClockTime';
 import { Distance } from '../domain/valueObjects/Distance';
 import { Pace } from '../domain/valueObjects/Pace';
 import { PlanNotFoundError, SegmentNotFoundError, StepNotFoundError } from '../domain/errors/DomainError';
@@ -44,7 +46,7 @@ export class PlanningServiceImpl implements PlanningService {
 
   createPlan(name = 'New plan'): PlanId {
     const id = this.idGenerator.newPlanId();
-    this.repository.save({ id, name, units: 'km', segments: [] });
+    this.repository.save({ id, name, units: 'km', segments: [], time: null });
     return id;
   }
 
@@ -61,6 +63,7 @@ export class PlanningServiceImpl implements PlanningService {
       ...source,
       id: newId,
       name: `${source.name} copy`,
+      time: null,
       segments: source.segments.map((segment) => ({
         ...segment,
         id: this.idGenerator.newSegmentId(),
@@ -77,6 +80,20 @@ export class PlanningServiceImpl implements PlanningService {
   setUnits(id: PlanId, units: Units): void {
     const plan = this.loadPlan(id);
     this.repository.save({ ...plan, units });
+  }
+
+  setPlanTime(id: PlanId, side: PlanTimeSide, raw: string): void {
+    const parsed = ClockTime.parse(raw);
+    const plan = this.loadPlan(id);
+    this.repository.save({
+      ...plan,
+      time: parsed ? { side, minutesSinceMidnight: parsed.minutesSinceMidnight } : null,
+    });
+  }
+
+  clearPlanTime(id: PlanId): void {
+    const plan = this.loadPlan(id);
+    this.repository.save({ ...plan, time: null });
   }
 
   addSegment(planId: PlanId, type: SegmentType): SegmentId {

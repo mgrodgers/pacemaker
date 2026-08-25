@@ -4,7 +4,7 @@ import type { Plan } from '../../../../src/domain/entities/Plan';
 import { planId } from '../../../../src/domain/valueObjects/Ids';
 
 function samplePlan(id: string, name: string): Plan {
-  return { id: planId(id), name, units: 'km', segments: [] };
+  return { id: planId(id), name, units: 'km', segments: [], time: null };
 }
 
 /** Shared behavioral contract every PlanRepository implementation must
@@ -56,6 +56,13 @@ export function planRepositoryContract(makeRepository: () => PlanRepository): vo
       repository.save(samplePlan('p1', 'Keep'));
       expect(() => repository.deleteById(planId('missing'))).not.toThrow();
       expect(repository.findAll()).toHaveLength(1);
+    });
+
+    test('save then findById round-trips a plan’s start/end time anchor', () => {
+      const repository = makeRepository();
+      const plan: Plan = { ...samplePlan('p1', 'Timed'), time: { side: 'start', minutesSinceMidnight: 360 } };
+      repository.save(plan);
+      expect(repository.findById(planId('p1'))?.time).toEqual({ side: 'start', minutesSinceMidnight: 360 });
     });
   });
 }

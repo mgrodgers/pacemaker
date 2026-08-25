@@ -1,4 +1,5 @@
 import type { PlanId, SegmentId, StepId } from '../../../domain/valueObjects/Ids';
+import type { PlanTimeSide } from '../../../domain/entities/Plan';
 import type { Units } from '../../../domain/valueObjects/Units';
 import type { FieldMode, SegmentField } from '../../../domain/valueObjects/FieldMode';
 import type { SegmentType } from '../../../domain/valueObjects/SegmentType';
@@ -18,6 +19,8 @@ export interface PlanningService {
   duplicatePlan(id: PlanId): PlanId;
   deletePlan(id: PlanId): void;
   setUnits(id: PlanId, units: Units): void;
+  setPlanTime(id: PlanId, side: PlanTimeSide, raw: string): void;
+  clearPlanTime(id: PlanId): void;
 
   addSegment(planId: PlanId, type: SegmentType): SegmentId;
   removeSegment(planId: PlanId, segmentId: SegmentId): void;
