@@ -10,6 +10,10 @@ describe('Distance.parse', () => {
     expect(Distance.parse('5', 'mi')?.km).toBeCloseTo(8.0467, 3);
   });
 
+  test('accepts a comma as the decimal separator', () => {
+    expect(Distance.parse('5,2', 'km')?.km).toBeCloseTo(5.2);
+  });
+
   test('rejects unparseable input', () => {
     expect(Distance.parse('abc', 'km')).toBeNull();
   });

@@ -15,7 +15,7 @@ export class Distance {
 
   static parse(raw: string | null | undefined, units: Units): Distance | null {
     if (raw == null) return null;
-    const value = Number.parseFloat(String(raw));
+    const value = Number.parseFloat(String(raw).replace(',', '.'));
     if (Number.isNaN(value)) return null;
     return new Distance(units === 'mi' ? value * KM_PER_MI : value);
   }

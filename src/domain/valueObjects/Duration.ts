@@ -15,7 +15,7 @@ export class Duration {
 
   static parse(raw: string | null | undefined): Duration | null {
     if (raw == null) return null;
-    const str = String(raw).trim();
+    const str = String(raw).trim().replace(',', '.');
     if (str === '') return null;
     if (str.includes(':')) {
       const parts = str.split(':').map((p) => Number.parseFloat(p));
