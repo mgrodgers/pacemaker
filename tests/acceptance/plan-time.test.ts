@@ -16,4 +16,12 @@ describe('plan start/end time', () => {
       end: { value: '06:45', dayOffset: 0 },
     });
   });
+
+  test('setting an end time calculates the start time from the plan’s total', async () => {
+    const plan = dsl.onPlan('Evening run').addTempo({ mode: 'time-pace', time: '45:00', pace: '6:00' }).setEndTime('19:00');
+    expect(await plan.planTime()).toEqual({
+      start: { value: '18:15', dayOffset: 0 },
+      end: { value: '19:00', dayOffset: 0 },
+    });
+  });
 });
