@@ -57,5 +57,12 @@ export function planRepositoryContract(makeRepository: () => PlanRepository): vo
       expect(() => repository.deleteById(planId('missing'))).not.toThrow();
       expect(repository.findAll()).toHaveLength(1);
     });
+
+    test('save then findById round-trips a plan’s start/end time anchor', () => {
+      const repository = makeRepository();
+      const plan: Plan = { ...samplePlan('p1', 'Timed'), time: { side: 'start', minutesSinceMidnight: 360 } };
+      repository.save(plan);
+      expect(repository.findById(planId('p1'))?.time).toEqual({ side: 'start', minutesSinceMidnight: 360 });
+    });
   });
 }
