@@ -1,13 +1,26 @@
 import { useRef } from 'react';
 import { useCoursePredictorController } from '../hooks/useCoursePredictorController';
-import { BackIcon } from './icons';
+import { BackIcon, DeleteIcon } from './icons';
 
 interface CoursePredictorScreenProps {
   onBack: () => void;
 }
 
 export function CoursePredictorScreen({ onBack }: CoursePredictorScreenProps) {
-  const { fileName, paceRaw, setPaceRaw, result, error, units, loadFile, predict } = useCoursePredictorController();
+  const {
+    fileName,
+    paceRaw,
+    setPaceRaw,
+    result,
+    error,
+    units,
+    loadFile,
+    predict,
+    savedPredictions,
+    savePrediction,
+    openSavedPrediction,
+    deleteSavedPrediction,
+  } = useCoursePredictorController();
   const inputRef = useRef<HTMLInputElement>(null);
 
   return (
@@ -94,6 +107,42 @@ export function CoursePredictorScreen({ onBack }: CoursePredictorScreenProps) {
                 ))}
               </tbody>
             </table>
+
+            <button type="button" className="btn btn-secondary" style={{ marginTop: 'var(--space-4)' }} onClick={savePrediction}>
+              Save prediction
+            </button>
+          </div>
+        )}
+
+        {savedPredictions.length > 0 && (
+          <div data-testid="saved-predictions-list" style={{ display: 'grid', gap: 'var(--space-2)' }}>
+            <div style={{ fontSize: 12, opacity: 0.6, textTransform: 'uppercase', letterSpacing: '0.08em' }}>Saved predictions</div>
+            {savedPredictions.map((saved) => (
+              <div
+                key={saved.id}
+                className="card"
+                data-testid="saved-prediction-item"
+                style={{ padding: 'var(--space-3)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}
+              >
+                <button
+                  type="button"
+                  className="btn btn-ghost"
+                  data-testid="open-saved-prediction"
+                  style={{ textAlign: 'left' }}
+                  onClick={() => openSavedPrediction(saved)}
+                >
+                  {saved.fileName} — {saved.totalTime} @ {saved.targetPaceRaw}
+                </button>
+                <button
+                  type="button"
+                  className="btn btn-ghost btn-icon"
+                  aria-label={`Delete saved prediction ${saved.fileName}`}
+                  onClick={() => deleteSavedPrediction(saved.id)}
+                >
+                  <DeleteIcon />
+                </button>
+              </div>
+            ))}
           </div>
         )}
       </div>
