@@ -73,4 +73,13 @@ describe('plan start/end time', () => {
       .clearTime();
     expect(await plan.planTime()).toBeNull();
   });
+
+  test('blanking the anchor field has the same effect as an explicit clear', async () => {
+    const plan = dsl
+      .onPlan('Blanked')
+      .addTempo({ mode: 'time-pace', time: '45:00', pace: '6:00' })
+      .setStartTime('06:00')
+      .setStartTime('');
+    expect(await plan.planTime()).toBeNull();
+  });
 });
