@@ -113,4 +113,9 @@ describe('plan start/end time', () => {
       end: { value: '00:30', dayOffset: 0 },
     });
   });
+
+  test('a total with seconds still rounds the derived time to the nearest minute', async () => {
+    const plan = dsl.onPlan('Odd seconds').addTempo({ mode: 'time-pace', time: '45:33', pace: '6:00' }).setStartTime('06:00');
+    expect((await plan.planTime())?.end.value).toBe('06:46');
+  });
 });
