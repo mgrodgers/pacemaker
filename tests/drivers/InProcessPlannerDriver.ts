@@ -6,7 +6,7 @@ import { planId, segmentId, stepId, type PlanId, type SegmentId, type StepId } f
 import type { SegmentType } from '../../src/domain/valueObjects/SegmentType';
 import type { StepKind } from '../../src/domain/valueObjects/StepKind';
 import type { FieldMode, SegmentField } from '../../src/domain/valueObjects/FieldMode';
-import type { EffortView, FieldSpec, IntervalSpec, PlannerDriver, TotalsView, UnitSystem } from './PlannerDriver';
+import type { EffortView, FieldSpec, IntervalSpec, PlanTimeView, PlannerDriver, TotalsView, UnitSystem } from './PlannerDriver';
 
 class SequentialIdGenerator implements IdGenerator {
   private n = 0;
@@ -69,6 +69,22 @@ export class InProcessPlannerDriver implements PlannerDriver {
 
   async setUnits(planName: string, units: UnitSystem): Promise<void> {
     this.service.setUnits(this.idFor(planName), units);
+  }
+
+  async setStartTime(planName: string, raw: string): Promise<void> {
+    this.service.setPlanTime(this.idFor(planName), 'start', raw);
+  }
+
+  async setEndTime(planName: string, raw: string): Promise<void> {
+    this.service.setPlanTime(this.idFor(planName), 'end', raw);
+  }
+
+  async clearTime(planName: string): Promise<void> {
+    this.service.clearPlanTime(this.idFor(planName));
+  }
+
+  async planTime(planName: string): Promise<PlanTimeView | null> {
+    return this.service.getPlan(this.idFor(planName)).time;
   }
 
   async addSegment(planName: string, type: Exclude<SegmentType, 'interval'>, spec: FieldSpec): Promise<void> {

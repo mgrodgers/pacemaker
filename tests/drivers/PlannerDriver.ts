@@ -31,6 +31,16 @@ export interface TotalsView {
   readonly pace: string;
 }
 
+export interface PlanTimeFieldView {
+  readonly value: string;
+  readonly dayOffset: number;
+}
+
+export interface PlanTimeView {
+  readonly start: PlanTimeFieldView;
+  readonly end: PlanTimeFieldView;
+}
+
 /**
  * Layer 3 (Protocol Driver): translates the DSL's intent into a concrete
  * way of talking to the system under test. Every method here is expressed
@@ -58,6 +68,10 @@ export interface PlannerDriver {
   duplicatePlan(name: string): Promise<void>;
   deletePlan(name: string): Promise<void>;
   setUnits(planName: string, units: UnitSystem): Promise<void>;
+  setStartTime(planName: string, raw: string): Promise<void>;
+  setEndTime(planName: string, raw: string): Promise<void>;
+  clearTime(planName: string): Promise<void>;
+  planTime(planName: string): Promise<PlanTimeView | null>;
 
   addSegment(planName: string, type: Exclude<SegmentType, 'interval'>, spec: FieldSpec): Promise<void>;
   addIntervalSegment(planName: string, spec: IntervalSpec): Promise<void>;

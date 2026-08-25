@@ -31,5 +31,6 @@ export function seedExamplePlanIfEmpty(repository: PlanRepository, idGenerator: 
     name: 'Track ladder',
     units: 'km',
     segments: [warmup, interval, rest, cooldown],
+    time: null,
   });
 }

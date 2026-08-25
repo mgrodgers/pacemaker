@@ -1,0 +1,19 @@
+import { beforeEach, describe, expect, test } from 'vitest';
+import { PlannerDsl } from '../dsl/PlannerDsl';
+import { InProcessPlannerDriver } from '../drivers/InProcessPlannerDriver';
+
+let dsl: PlannerDsl;
+
+beforeEach(() => {
+  dsl = new PlannerDsl(new InProcessPlannerDriver());
+});
+
+describe('plan start/end time', () => {
+  test('setting a start time calculates the end time from the plan’s total', async () => {
+    const plan = dsl.onPlan('Morning run').addTempo({ mode: 'time-pace', time: '45:00', pace: '6:00' }).setStartTime('06:00');
+    expect(await plan.planTime()).toEqual({
+      start: { value: '06:00', dayOffset: 0 },
+      end: { value: '06:45', dayOffset: 0 },
+    });
+  });
+});

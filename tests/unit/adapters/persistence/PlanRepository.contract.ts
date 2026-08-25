@@ -4,7 +4,7 @@ import type { Plan } from '../../../../src/domain/entities/Plan';
 import { planId } from '../../../../src/domain/valueObjects/Ids';
 
 function samplePlan(id: string, name: string): Plan {
-  return { id: planId(id), name, units: 'km', segments: [] };
+  return { id: planId(id), name, units: 'km', segments: [], time: null };
 }
 
 /** Shared behavioral contract every PlanRepository implementation must
