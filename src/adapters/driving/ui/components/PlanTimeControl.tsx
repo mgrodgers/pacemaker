@@ -1,4 +1,5 @@
 import type { PlanTimeFieldView, PlanTimeView } from '../../../../application/dto/PlanViews';
+import { DeleteIcon } from './icons';
 
 interface PlanTimeControlProps {
   time: PlanTimeView | null;
@@ -19,19 +20,13 @@ export function PlanTimeControl({ time, onSetStartTime, onSetEndTime, onClear }:
   return (
     <div
       data-testid="plan-time"
-      style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-2)', padding: 'var(--space-2) 0' }}
+      style={{ display: 'flex', alignItems: 'flex-end', gap: 'var(--space-2)', width: '100%', padding: 'var(--space-2) 0' }}
     >
       <TimeField id="plan-time-start" label="Start time" field={time.start} onChange={onSetStartTime} />
-      <span aria-hidden="true" style={{ marginTop: 'var(--space-4)' }}>→</span>
+      <span aria-hidden="true" style={{ paddingBottom: 8 }}>→</span>
       <TimeField id="plan-time-end" label="End time" field={time.end} onChange={onSetEndTime} />
-      <button
-        type="button"
-        className="btn btn-ghost btn-icon"
-        aria-label="Clear time"
-        onClick={onClear}
-        style={{ marginTop: 'var(--space-4)' }}
-      >
-        ×
+      <button type="button" className="btn btn-ghost btn-icon" aria-label="Clear time" onClick={onClear}>
+        <DeleteIcon size={13} />
       </button>
     </div>
   );
@@ -49,11 +44,11 @@ function TimeField({
   onChange: (raw: string) => void;
 }) {
   return (
-    <div className="field">
+    <div className="field" style={{ flex: 1, minWidth: 0 }}>
       <label htmlFor={id}>{label}</label>
       <span style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-1)' }}>
         <input id={id} type="time" className="input" value={field.value} onChange={(e) => onChange(e.target.value)} />
-        <span data-testid={`${id}-offset`} style={{ fontSize: 11, opacity: 0.6 }}>
+        <span data-testid={`${id}-offset`} style={{ fontSize: 11, opacity: 0.6, flexShrink: 0 }}>
           {field.dayOffset !== 0 ? `${field.dayOffset > 0 ? '+' : ''}${field.dayOffset}d` : ''}
         </span>
       </span>
