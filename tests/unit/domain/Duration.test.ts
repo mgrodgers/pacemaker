@@ -14,6 +14,10 @@ describe('Duration.parse', () => {
     expect(Duration.parse('1:02:03')?.seconds).toBe(3723);
   });
 
+  test('accepts a comma as the decimal separator', () => {
+    expect(Duration.parse('8,5')?.seconds).toBe(510);
+  });
+
   test('rejects unparseable input', () => {
     expect(Duration.parse('abc')).toBeNull();
     expect(Duration.parse('1:ab')).toBeNull();
